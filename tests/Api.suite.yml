@@ -1,0 +1,10 @@
+actor: ApiTester
+suite_namespace: Tests\Api
+modules:
+    # enable helpers as array
+    enabled: 
+    # []
+        - REST:
+            url: https://portal-develop-devdb.staging.cozone.com
+            depends: PhpBrowser
+            part: Json
