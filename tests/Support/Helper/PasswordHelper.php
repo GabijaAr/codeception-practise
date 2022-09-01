@@ -57,4 +57,5 @@ class PasswordHelper extends Module
         );
         $I->seeResponseCodeIsSuccessful();
     }
+
 }

@@ -14,15 +14,27 @@ class LoginCest
 {
 
     private $username = 'testAcc1Sample@terstermail.com';
-    private $password = 'TEST1-strong#';
-    private $newPassword = 'STRONG-test1API';
+    private $password = 'STRONG-test1API';
+    private $newPassword = 'TEST1-strong#';
     
     public function _before(AcceptanceTester $I,  PasswordHelper $passwordHelper) : void
     {
         $I->setPageAndCookie(LoginPage::URL);
-        if($passwordHelper->getToken() == ''){
-        $I->loginApi($this->username, $this->password);
+
+        if($passwordHelper->getToken() == '')
+        {
+            $I->loginApi($this->username, $this->password);
         }
+
+    }
+
+    public function _after( AcceptanceTester $I, \Codeception\Scenario $scenario) : void
+    {
+        if($scenario->current('name') === 'tryToNewPassword')
+        {
+            $I->changePasswordApi($this->newPassword, $this->password); 
+        }
+
     }
 
     // tests
@@ -57,7 +69,7 @@ class LoginCest
         $I->seeElement(LoginPage::PASSWORD_FIELD_TEXT);     
     }
 
-    public function tryToLogout(AcceptanceTester $I, LoginPage $loginPage, PortalPage $portalPage) : void
+    public function tryToLogout(AcceptanceTester $I, LoginPage $loginPage, PortalPage $portalPage, PasswordHelper $passwordHelper) : void
     {
         $loginPage->login($this->username, $this->password);
         $loginPage->logout($portalPage);
@@ -81,8 +93,4 @@ class LoginCest
             $I->seeCurrentUrlEquals(PortalPage::URL_PORTAL);           
     }
 
-    public function _afterStep( AcceptanceTester $I, LoginCest\tryToNewPassword $tryToNewPassword, \Codeception\Scenario $scenario) : void
-    {
-        $I->changePasswordApi($this->newPassword, $this->password); 
-    }
 }

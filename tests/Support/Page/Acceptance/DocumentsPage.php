@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Support\Page\Acceptance;
 
 use Tests\Support\AcceptanceTester;
+use Codeception\Util\Locator;
 use Tests\Support\Page\Acceptance\LoginPage;
 use Tests\Support\Page\Acceptance\PortalPage;
 
@@ -87,5 +88,20 @@ class DocumentsPage
         $I->waitForElementClickable(self::FIRST_ROW_CHECK, 120);
     }
 
+    public function grantAccessToDirectory($documentAreaName) : void
+    {
+        $I = $this->acceptanceTester;
+
+        $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent'); 
+        $I->waitAndClick(Locator::contains('a', "{$documentAreaName}"));
+        $I->waitAndClick('#users-tab');
+        $I->waitAndClick(Locator::contains('fds-button button.btn-text-flush', ' Add users '));        
+        $I->waitAndClick(Locator::contains('button', 'Select users'));
+        $I->waitAndClick(Locator::contains('fds-selector-menu-checkbox label', ' Acc3 test company '));
+        $I->waitAndClick(Locator::contains('fds-button > button.btn-primary', ' Add users '));
+        $I->waitAndClick(Locator::contains('fds-selector > button', 'Viewer'));
+        $I->click(Locator::contains('fds-card-footer button', 'Save'));
+        $I->waitForElementNotVisible('.alert-success', 60);
+    }
     
 }
