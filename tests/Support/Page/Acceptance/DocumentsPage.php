@@ -49,7 +49,10 @@ class DocumentsPage
         $this->acceptanceTester = $I;
     }
 
-    public function redirectToDocumentsPage(string $username, string $password, $loginPage) : void
+    public function redirectToDocumentsPage(
+        string $username, 
+        string $password, 
+        $loginPage) : void
     {
         $I = $this->acceptanceTester;
 

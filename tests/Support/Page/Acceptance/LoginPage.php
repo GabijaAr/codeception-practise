@@ -52,29 +52,6 @@ class LoginPage
         $I = $this->acceptanceTester;
 
         $I->waitForElementVisible(PortalPage::PORTAL_NAV_SECT, 60);
-
-        // try {
-        //     $this->getModule('WebDriver')->_findElements($element);
-        // } catch (\PHPUnit_Framework_AssertionFailedError $f) {
-        //     return false;
-        // }
-        // return true;
-
-        // $I->surwey();
-        // $I->performOn(['click' => ], 30);
-  
-        
-        // if($I->seeElement(PortalPage::SURVEY_HOTJAR) == true){
-        //     $I->click(PortalPage::SURVEY_HOTJAR);   
-        // }
-
-        // if($I->seePageHasElement(PortalPage::SURVEY_HOTJAR) !== null) {
-        //     $I->waitAndClick(PortalPage::SURVEY_HOTJAR);
-        // }
-        // if($I->seePageHasElement(PortalPage::SURVEY_HOTJAR)) {
-        //     
-        // }
-        // $I->wait(5);
         $I->waitAndClick(PortalPage::SURVEY_HOTJAR);
         $I->waitAndClick(PortalPage::NAV_DROPDOWN);
         $I->waitForElementClickable(PortalPage::NAV_ITEM__MANAGE_LINKS, 60);

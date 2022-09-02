@@ -6,6 +6,7 @@ namespace Tests\Acceptance;
 use Tests\Support\AcceptanceTester;
 use Codeception\Util\Shared\Asserts;
 use Codeception\Util\Locator;
+use Codeception\Attribute\Incomplete;
 
 use Tests\Support\Page\Acceptance\DocumentsPage;
 use Tests\Support\Page\Acceptance\LoginPage;
@@ -21,38 +22,59 @@ class DocumentsCest
     private $password = 'PASS*w01rd';
     private $secondUsername = 'Acc3@testermail.com';
     private $secondPassword = 'PASS*w01rd3';
-    private $documentAreaName = 'Test13';
+    
+    private $documentAreaName = 'test api77';
 
+    // Directory area
     private $parentDirectoryId = 2930954;
-    private $directoryName = 'test api10';
+    private $directoryName = 'new API0';
     private $userId = '35703'; 
     private $permission = 'viewer';
 
-    public function _before(AcceptanceTester $I, LoginPage $loginPage, DocumentsPage $documentsPage, PasswordHelper $passwordHelper) : void
+    public function _before(
+        AcceptanceTester $I,
+        LoginPage $loginPage,
+        DocumentsPage $documentsPage, 
+        PasswordHelper $passwordHelper,
+        \Codeception\Scenario $scenario) : void
     {
         $I->setPageAndCookie(LoginPage::URL);        
         $documentsPage->redirectToDocumentsPage($this->username, $this->password, $loginPage);
+
+        if($scenario->current('name') === 'tryToFileUploadApi')
+        {
+            $I->loginApi($this->username, $this->password);
+        }
     }
 
-    public function _after( AcceptanceTester $I,DocumentHelper $documentHelper, \Codeception\Scenario $scenario) : void
+    public function _after( 
+        AcceptanceTester $I,
+        DocumentHelper $documentHelper, 
+        \Codeception\Scenario $scenario) : void
     {
         if($scenario->current('name') === 'tryToCreateDocumentArea')
         {
             $I->waitAndClick(['css' => 'fds-tree-item[data-test-id="sidebar-current-company"] a']);
-                        // delete Data Area via id
+            // delete Data Area via id
         }
 
     }
 
     // tests
-    public function tryToUploadFile(AcceptanceTester $I, LoginPage $loginPage, DocumentsPage $documentsPage) : void
+    public function tryToUploadFile(
+        AcceptanceTester $I, 
+        LoginPage $loginPage, 
+        DocumentsPage $documentsPage) : void
     {
         $documentsPage->fileUpload('d913d35c-915c-41db-a126-613d04694752.txt');
         $documentsPage->fileDelete();
     }
 
-    // check acess needed
-    public function tryToCreateDocumentArea(AcceptanceTester $I, LoginPage $loginPage, DocumentsPage $documentsPage, PortalPage $portalPage) : void
+    public function tryToCreateDocumentArea(
+        AcceptanceTester $I, 
+        LoginPage $loginPage, 
+        DocumentsPage $documentsPage, 
+        PortalPage $portalPage) : void
     {
         $I->amOnUrl(DocumentsPage::URL);
         $I->waitForElementVisible(DocumentsPage::DRIVE_NAV_ASIDE, 120);
@@ -74,27 +96,51 @@ class DocumentsCest
         // $I->seeCurrentUrlEquals(LoginPage::URL); 
     }
 
+    #[Incomplete]
     public function tryToSetUpStructure(AcceptanceTester $I) : void
     {
-        // $I->amOnUrl(DocumentsPage::URL);
-        // $I->waitForElementVisible(DocumentsPage::DRIVE_NAV_ASIDE, 120);
+        $I->amOnUrl(DocumentsPage::URL);
+        $I->waitForElementVisible(DocumentsPage::DRIVE_NAV_ASIDE, 120);
+        $I->waitAndClick(['css' => 'a[href="/ui/default-structure-setup"]']);
+        $I->waitAndClick('fds-selector-field[formcontrolname="country"]');
+        $I->waitForElementVisible('fds-selector > button');
+        $I->click('fds-selector > button', ' Sweden ');
+        $I->waitAndClick(Locator::contains('fds-selector > button', ' 2024 '));
+        $I->waitAndClick(Locator::contains('fds-selector > button', ' EN '));
 
+        $I->waitAndClick(Locator::contains('label.custom-control-label', ' Test Company 09/2022 '));
     }
 
-    public function tryToFileUploadApi(AcceptanceTester $I, DocumentHelper $documentHelper, PasswordHelper $passwordHelper) : void
+    public function tryToFileUploadApi(AcceptanceTester $I,
+        DocumentHelper $documentHelper,
+        PasswordHelper $passwordHelper, 
+        DocumentsPage $documentsPage,
+        LoginPage $loginPage,
+        \Codeception\Scenario $scenario) : void
     {       
-         if($passwordHelper->getToken() == '')
-        {
-            $I->loginApi($this->username, $this->password);
-        }
-        $documentHelper->createNewDirectory($this->parentDirectoryId, $this->directoryName , $this->userId, $this->permission, $passwordHelper);
+
+        // $documentHelper->createNewDirectory(
+        //     $this->parentDirectoryId, 
+        //     $this->directoryName , 
+        //     $this->userId, 
+        //     $this->permission, 
+        //     $passwordHelper);
         
-        // 500error
-        $documentHelper->uploadNewFile($passwordHelper);
+        // 500error -issitraukti sukurtos direktorijos id ir isikelti
+        // $documentHelper->uploadNewFile($passwordHelper);
 
-        // multisession testing
-        $documentsPage->grantAccessToDirectory($this->documentAreaName); //name must be changed
+        // // multisession testing
+        $documentsPage->grantAccessToDirectory($this->documentAreaName);       
+        
+        $I = new AcceptanceTester($scenario);
+        $secondUser = $I->haveFriend('secondUser');
 
+        $secondUser->does(function (AcceptanceTester $I) use ($loginPage){
+            $I->amOnPage('https://documents-develop-devdb.staging.cozone.com/ui/recent');
+            $I->setPageAndCookie(LoginPage::URL);  
+            $loginPage->login($this->secondUsername, $this->secondPassword );
+            $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
+        });
     }
 
 

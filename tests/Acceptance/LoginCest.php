@@ -17,11 +17,14 @@ class LoginCest
     private $password = 'STRONG-test1API';
     private $newPassword = 'TEST1-strong#';
     
-    public function _before(AcceptanceTester $I,  PasswordHelper $passwordHelper) : void
+    public function _before(
+        AcceptanceTester $I,  
+        PasswordHelper $passwordHelper, 
+        \Codeception\Scenario $scenario) : void
     {
         $I->setPageAndCookie(LoginPage::URL);
-
-        if($passwordHelper->getToken() == '')
+    
+        if($scenario->current('name') === 'tryToNewPassword')
         {
             $I->loginApi($this->username, $this->password);
         }
@@ -69,7 +72,11 @@ class LoginCest
         $I->seeElement(LoginPage::PASSWORD_FIELD_TEXT);     
     }
 
-    public function tryToLogout(AcceptanceTester $I, LoginPage $loginPage, PortalPage $portalPage, PasswordHelper $passwordHelper) : void
+    public function tryToLogout(
+        AcceptanceTester $I, 
+        LoginPage $loginPage, 
+        PortalPage $portalPage, 
+        PasswordHelper $passwordHelper) : void
     {
         $loginPage->login($this->username, $this->password);
         $loginPage->logout($portalPage);

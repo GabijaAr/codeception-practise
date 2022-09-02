@@ -10,13 +10,7 @@ use Codeception\Module;
 
 class PasswordHelper extends Module
 {
-    private $token = '';
     private $defaultLoginScope = "app-portal app-documents"; 
-
-    public function getToken() : string 
-    {
-        return $this->token;
-    }
 
     public function loginApi(string $username, string $password) : void
     {
@@ -37,17 +31,15 @@ class PasswordHelper extends Module
         $I->seeResponseCodeIsSuccessful();
 
         $this->token = $I->grabDataFromResponseByJsonPath('access_token')[0];
-        
+        $I->amBearerAuthenticated($this->token);  
+        $I->haveHttpHeader('accept', 'application/json');
+        $I->haveHttpHeader('content-type', 'application/json');
     }
 
     public function changePasswordApi(string $password, string $newPassword) : void
     {
         $I = $this->getModule(name: 'REST');
-
-        $I->haveHttpHeader('accept', 'application/json');        
-        $I->haveHttpHeader('content-type', 'application/json');    
-        $I->amBearerAuthenticated($this->token);  
-
+    
         $I->sendPATCH(
             'https://portal-develop-devdb.staging.cozone.com/api/v1/me',[
                 "newPassword" => "{$newPassword}",
