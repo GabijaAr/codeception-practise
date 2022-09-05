@@ -7,11 +7,13 @@ use Codeception\Module;
 use Tests\Support\AcceptanceTester;
 use Codeception\Attribute\Incomplete;
 
+
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
 class DocumentHelper extends \Codeception\Module
 {
+
 
     public function getDocumentAreaId($companyId)
     {
@@ -27,12 +29,13 @@ class DocumentHelper extends \Codeception\Module
         $I->seeResponseCodeIsSuccessful();
     }
 
+    // persikelti i array
     public function createNewDirectory(
         $parentDirectoryId, 
         $directoryName, 
         $userId, 
         $permission, 
-        $passwordHelper ) : void 
+        $passwordHelper ) : int 
     {
         $I = $this->getModule(name: 'REST');
 
@@ -64,36 +67,40 @@ class DocumentHelper extends \Codeception\Module
             ]
         );
         $I->seeResponseCodeIsSuccessful();
+        return $I->grabDataFromResponseByJsonPath('id')[0];        
     }
 
-    #[Incomplete]
-    public function uploadNewFile($passwordHelper) : void 
+    private function createTmpFile(string $fileName, string $fileContents): string
+    {
+        $location = sys_get_temp_dir() . "/{$fileName}";
+    
+        if (file_exists($location)) {
+            unlink($location);
+        }
+    
+        file_put_contents($location, $fileContents);
+    
+        return $location;
+    }
+
+    public function uploadNewFile(array $parametersFile, string $file) : int 
     {
         $I = $this->getModule(name: 'REST');
 
-        $I->haveHttpHeader('Accept', 'application/json');        
-        $I->haveHttpHeader('Content-type','multipart/form-data' );         
-        $I->amBearerAuthenticated($passwordHelper->getToken());  
+        $nullV = null;
+        $I->deleteHeader('Content-Type');
 
-        // $path = codecept_data_dir();
-        // $filename = 'd913d35c-915c-41db-a126-613d04694752.txt';
-        $I->sendPOST(
-            'https://documents-develop-devdb.staging.cozone.com/v1/api/files',[
-                'contents' => null,
-                'contentType' => "text/plain",
-                'name' => 'FileForApi4',
-                'relativePath' => 'API',
-                'parentDirectoryId' => 2931119  ,              
-            ],      
-            ['contents' => [
-                    'name' => 'd913d35c-915c-41db-a126-613d04694752.txt',
-                    'type' => 'text/plain',
-                    'size' => filesize(codecept_data_dir('d913d35c-915c-41db-a126-613d04694752.txt')),
-                    'tmp_name' => codecept_data_dir('d913d35c-915c-41db-a126-613d04694752.txt'),
 
-                ]]
-            // ['contents' =>  $path . $filename]
-        );
+        $tmp = $this->createTmpFile($parametersFile['name'], file_get_contents(codecept_data_dir($file)));
+
+        $I->sendPOST('https://documents-develop-devdb.staging.cozone.com/v1/api/files', $parametersFile, ['contents' => $tmp]);
+        $I->haveHttpHeader('Content-Type', 'application/json');
         $I->seeResponseCodeIsSuccessful();
+        return $I->grabDataFromResponseByJsonPath('id')[0];
+    }
+
+    public function selectParameter()
+    {
+        //
     }
 }

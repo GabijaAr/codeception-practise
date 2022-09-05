@@ -44,7 +44,7 @@ class LoginPage
 
         $I->waitAndFill(self::USERNAME_FIELD, $name);
         $I->waitAndFill(self::PASSWORD_FIELD, $password);
-        $I->click(self::LOGIN_BUTTON);
+        $I->waitAndClick(self::LOGIN_BUTTON);
     }
 
     public function logout($portalPage)

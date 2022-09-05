@@ -33,7 +33,7 @@ class DocumentsPage
     public const MAIN_CARD_HEADER = ['css' => '.ag-header.ag-focus-managed'];
     public const FIRST_ROW_CHECK = ['css' => 'fds-icon-button[icon="more"] > button:first-of-type'];      
     public const FIRST_ROW = ['css' => '.ag-pinned-right-cols-container > div[role="row"]:first-of-type']; 
-    public const FIRST_ROW_MORE_BUTTON = ['css' => '.ag-pinned-right-cols-container > div[role="row"]:first-child fds-icon-button[icon="more"] > button'];       
+    public const FIRST_ROW_MORE_BUTTON = ['css' => '.ag-pinned-right-cols-container > div[row-id="2931198"] fds-icon-button[icon="more"] > button'];       
     public const MORE_DELETE = ['css' => 'fds-dropdown-menu-item[data-gtm-id="file-actions-delete"] > button'];  
     public const CONFIRM_DELETE = ['css' => 'button[data-gtm-id="confirm-confirmation-modal"]'];
     
@@ -91,20 +91,35 @@ class DocumentsPage
         $I->waitForElementClickable(self::FIRST_ROW_CHECK, 120);
     }
 
-    public function grantAccessToDirectory($documentAreaName) : void
+    public function grantAccessToDirectory($documentAreaName, $user) : void
     {
         $I = $this->acceptanceTester;
 
         $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent'); 
-        $I->waitAndClick(Locator::contains('a', "{$documentAreaName}"));
-        $I->waitAndClick('#users-tab');
-        $I->waitAndClick(Locator::contains('fds-button button.btn-text-flush', ' Add users '));        
-        $I->waitAndClick(Locator::contains('button', 'Select users'));
-        $I->waitAndClick(Locator::contains('fds-selector-menu-checkbox label', ' Acc3 test company '));
-        $I->waitAndClick(Locator::contains('fds-button > button.btn-primary', ' Add users '));
-        $I->waitAndClick(Locator::contains('fds-selector > button', 'Viewer'));
+        $I->waitAndClick(Locator::contains('a', "{$documentAreaName}"), 12);
+        $I->waitAndClick('#users-tab', 12);
+        $I->waitAndClick(Locator::contains('fds-button button.btn-text-flush', ' Add users '), 12);        
+        $I->waitAndClick(Locator::contains('button', 'Select users'), 12);
+        $I->waitForElementVisible(Locator::contains('label.custom-control-label', $user), 12);
+        $I->checkOption(Locator::contains('label.custom-control-label', $user));
+        $I->waitAndClick(Locator::contains('fds-button > button.btn-primary', ' Add users '), 12);
+        $I->waitAndClick(Locator::contains('fds-selector > button', 'Viewer'), 12);
         $I->click(Locator::contains('fds-card-footer button', 'Save'));
         $I->waitForElementNotVisible('.alert-success', 60);
+    }
+
+    public function documentAreaDelete($directoryName) : void
+    {
+        $I = $this->acceptanceTester;
+
+        $I->amOnUrl(self::URL_FILE_DROP);
+        $I->waitForElementVisible(self::MAIN_CARD_HEADER, 120);  
+        $I->waitAndClick(['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] a'], 12);
+        $I->waitForElementVisible(['css' => 'div.ag-center-cols-clipper > div.ag-center-cols-viewport'], 12);
+        $I->waitAndclick(['css' => "div[row-id='{$directoryName}'] fds-icon-button[icon='more'] > button'] "], 12);   
+        $I->click(self::MORE_DELETE);
+        $I->click(self::CONFIRM_DELETE);
+        $I->waitForElementClickable(self::FIRST_ROW_CHECK, 120);
     }
     
 }

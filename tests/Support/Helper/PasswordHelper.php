@@ -10,7 +10,7 @@ use Codeception\Module;
 
 class PasswordHelper extends Module
 {
-    private $defaultLoginScope = "app-portal app-documents"; 
+    private $defaultLoginScope = "app-portal app-documents app-control"; 
 
     public function loginApi(string $username, string $password) : void
     {
