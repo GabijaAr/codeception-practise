@@ -114,12 +114,12 @@ class DocumentsPage
 
         $I->amOnUrl(self::URL_FILE_DROP);
         $I->waitForElementVisible(self::MAIN_CARD_HEADER, 120);  
-        $I->waitAndClick(['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] a'], 12);
-        $I->waitForElementVisible(['css' => 'div.ag-center-cols-clipper > div.ag-center-cols-viewport'], 12);
-        $I->waitAndclick(['css' => "div[row-id='{$directoryName}'] fds-icon-button[icon='more'] > button'] "], 12);   
-        $I->click(self::MORE_DELETE);
+        $I->waitAndClick(['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] > a'], 60);
+        $I->waitForElementVisible(['css' => 'div.ag-pinned-right-cols-container'], 60);
+        $I->click(['css' => "div[row-id='{$directoryName}'] fds-icon-button[icon='more'] > button"]);   
+        $I->click(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-actions-delete-directory"] > button']);
         $I->click(self::CONFIRM_DELETE);
-        $I->waitForElementClickable(self::FIRST_ROW_CHECK, 120);
+        $I->dontSeeElement(['css' => "div.ag-row-even[row-id='{$directoryName}']"]);
     }
     
 }

@@ -27,7 +27,7 @@ class DocumentsCest
     private $documentAreaName = 'test api77';
 
     private $parentDirectoryId = 2930954;
-    private $directoryName = 'Directory1';
+    private $directoryName = 'Directory';
     private $userId = '35703'; 
     private $permission = 'viewer';
 
@@ -106,19 +106,44 @@ class DocumentsCest
         // $I->seeCurrentUrlEquals(LoginPage::URL); 
     }
 
-    // #[Incomplete]
     public function tryToSetUpStructure(AcceptanceTester $I) : void
     {
         $I->amOnUrl(DocumentsPage::URL);
-        $I->waitForElementVisible(DocumentsPage::DRIVE_NAV_ASIDE, 120);
-        $I->waitAndClick(['css' => 'a[href="/ui/default-structure-setup"]']);
-        $I->waitAndClick('fds-selector-field[formcontrolname="country"]');
-        $I->waitForElementVisible(Locator::contains('button.selector__item', ' Sweden '));
+        $I->waitForElementVisible(DocumentsPage::DRIVE_NAV_ASIDE, 60);
+        $I->waitAndClick(['css' => 'a[href="/ui/default-structure-setup"]'], 60);
+
+        $I->waitAndClick('fds-selector-field[formcontrolname="country"]', 60);
+        $I->waitForElementVisible(Locator::contains('button.selector__item', ' Sweden '), 60);
         $I->click(Locator::contains('button.selector__item', ' Sweden '));
-        $I->wait(5);
-        // $I->waitAndClick(Locator::contains('fds-selector > button', ' 2024 '));
-        // $I->waitAndClick(Locator::contains('fds-selector > button', ' EN '));
-        // $I->waitAndClick(Locator::contains('label.custom-control-label', ' Test Company 09/2022 '));
+        
+        $I->waitAndClick('fds-selector-field[formcontrolname="year"]', 60);
+        $I->waitAndClick(Locator::contains('button.selector__item', ' 2024 '), 60);
+
+        $I->waitAndClick('fds-selector-field[formcontrolname="language"]', 60);        
+        $I->waitAndClick(Locator::contains('button.selector__item', ' EN '), 60);
+
+        $I->waitAndClick('fds-selector-field[formcontrolname="documentAreas"]', 60);        
+        $I->waitAndClick(Locator::contains('label.custom-control-label', 'HR Reports'), 60);
+        $I->waitAndClick(Locator::contains('label.custom-control-label', 'Finance Reports'));
+
+        $I->waitAndClick('fds-selector-field[formcontrolname="companies"]', 60); 
+        $I->fillField(['css' => 'fds-selector-field[formcontrolname="companies"] input'], 'Test Company 09/2022');
+        $I->waitAndClick(Locator::contains('label', ' Test Company 09/2022 '), 60);
+
+        $I->waitAndClick(Locator::contains('button', ' Create structure '), 60);
+        $I->waitForElementVisible('div.alert-success', 60);
+
+        $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
+        $I->waitAndClick(Locator::contains('fds-tree-item[data-test-id="sidebar-current-company"] a', 'Test Company 09/2022'), 60);
+        $I->waitAndClick(Locator::contains('fds-tree-item[icon="document-area"] a', 'Finance Reports'), 60);
+        $I->seeElement(Locator::contains('fds-tree-item a', 'From Azets'));
+        $I->seeElement(Locator::contains('fds-tree-item a', 'To Azets'));
+
+        $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
+        $I->waitAndClick(Locator::contains('fds-tree-item[data-test-id="sidebar-current-company"] a', 'Test Company 09/2022'), 60);        
+        $I->waitAndClick(Locator::contains('fds-tree-item[icon="document-area"] a', 'HR Reports'), 60);
+        $I->seeElement(Locator::contains('fds-tree-item a', 'From Azets'));
+        $I->seeElement(Locator::contains('fds-tree-item a', 'To Azets'));
     }
 
 
@@ -179,7 +204,7 @@ class DocumentsCest
 
         $secondUser->leave();
 
-        // $documentsPage->documentAreaDelete($newDirect);
+        $documentsPage->documentAreaDelete($newDirect);
     }
 
 
