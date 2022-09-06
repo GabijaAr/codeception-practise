@@ -12,7 +12,7 @@ class PasswordHelper extends Module
 {
     private $defaultLoginScope = "app-portal app-documents app-control"; 
 
-    public function loginApi(string $username, string $password) : void
+    public function loginApi(array $user) : void
     {
         $I = $this->getModule(name: 'REST');
 
@@ -23,8 +23,8 @@ class PasswordHelper extends Module
             '/api/v1/oauth2', [
                 "grant_type" => "password",
                 "client_id" => "publicclient",
-                "username" => "{$username}",
-                "password" => "{$password}",
+                "username" => $user['username'],
+                "password" => $user['password'],
                 "scope" => "{$this->defaultLoginScope}"
                 ]
         );

@@ -15,7 +15,7 @@ class DocumentHelper extends \Codeception\Module
 {
 
 
-    public function getDocumentAreaId($companyId)
+    public function getDocumentAreaFiles($companyId)
     {
         $I = $this->getModule(name: 'REST');
 
@@ -23,19 +23,17 @@ class DocumentHelper extends \Codeception\Module
         $I->haveHttpHeader('content-type', 'application/json');    
         $I->amBearerAuthenticated($passwordHelper->getToken()); 
         
-        $I->sendGET(
+        return $I->sendGET(
             "https://documents-develop-devdb.staging.cozone.com/v1/api/companies/'{$companyId}'/document-areas"
         );
         $I->seeResponseCodeIsSuccessful();
     }
 
-    // persikelti i array
-    public function createNewDirectory(
-        $parentDirectoryId, 
-        $directoryName, 
-        $userId, 
-        $permission, 
-        $passwordHelper ) : int 
+    public function getFileId(){
+
+    }
+
+    public function createNewDirectory( array $directoryParam, $passwordHelper ) : int 
     {
         $I = $this->getModule(name: 'REST');
 
@@ -44,15 +42,15 @@ class DocumentHelper extends \Codeception\Module
         
         $I->sendPOST(
             'https://documents-develop-devdb.staging.cozone.com/v1/api/directories',[
-                'parentDirectoryId' => "{$parentDirectoryId}",
-                'name' => "{$directoryName}",
+                'parentDirectoryId' => $directoryParam['parentDirectoryId'],
+                'name' => $directoryParam['directoryName'],
                 'accessRules' => 
                     [
                     0 => 
                         [
                             'user' => 
                                 [
-                                'id' => "{$userId}",
+                                'id' => $directoryParam['userId'],
                                 ],
                             'permissions' => 
                                 [
@@ -61,7 +59,7 @@ class DocumentHelper extends \Codeception\Module
                                 'files' => true,
                                 'folders' => true,
                                 ],
-                            'permission' => "{$permission}",
+                            'permission' => $directoryParam['permission'],
                         ],
                 ], 
             ]
@@ -99,8 +97,4 @@ class DocumentHelper extends \Codeception\Module
         return $I->grabDataFromResponseByJsonPath('id')[0];
     }
 
-    public function selectParameter()
-    {
-        //
-    }
 }

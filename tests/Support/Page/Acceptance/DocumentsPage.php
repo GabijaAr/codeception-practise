@@ -49,32 +49,32 @@ class DocumentsPage
         $this->acceptanceTester = $I;
     }
 
-    public function redirectToDocumentsPage(
-        string $username, 
-        string $password, 
-        $loginPage) : void
+    public function redirectToDocumentsPage(array $user, $loginPage) : void
     {
         $I = $this->acceptanceTester;
 
-        $loginPage->login($username, $password);
+        $loginPage->login($user['username'], $user['password']);
         $I->waitForElementVisible(PortalPage::PORTAL_NEWS_SECT, 120);
         $I->amOnUrl(self::URL);
     }
 
-    public function fileUpload(string $file) : void
+    public function fileUpload(string $file, string $documentAreaName) : void
     {
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL);
         $I->waitForElementVisible(self::DRIVE_NAV_ASIDE, 120);
-        $I->waitAndClick(self::FILE_TO_CONSULT_BUTTON);
-        $I->waitForElementVisible(self::MAIN_CARD, 120); 
-        $I->waitAndClick(self::FILE_UPLOAD_BUTTON);        
-    
-        $I->attachFile(self::FILE_ATTACHED, $file);
-        $I->waitForElementNotVisible(self::FILE_UPLOAD_ALERT, 120);
+
+        $I->waitAndClick(Locator::contains('fds-tree-item a', 'Test Company 09/2022'),60);
+        $I->waitAndClick(Locator::contains('fds-tree-item a', $documentAreaName ),60);
         $I->reloadPage();
-        $I->waitForElementVisible(self::MAIN_CARD_HEADER, 120); 
+        $I->waitAndClick(['css' => 'fds-icon-button[data-gtm-id="directory-show-more-actions"] > button'], 60);  
+        $I->waitAndClick(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button'], 60);
+        $I->attachFile(['css' => 'input[data-test-id="file-upload-selector"]'], $file);
+        
+        $I->waitForElementVisible(['css' => 'fds-text-field > input'], 60);
+        $I->fillField(['css' => 'fds-text-field > input'], 'Test Company 09/2022');
+        $I->waitAndClick(Locator::contains('button', " Upload files  "), 60);
     }
 
     public function fileDelete() : void
@@ -91,21 +91,32 @@ class DocumentsPage
         $I->waitForElementClickable(self::FIRST_ROW_CHECK, 120);
     }
 
+    public function createDocumentArea($documentAreaName)
+    {
+        $I = $this->acceptanceTester;
+                
+        $I->amOnUrl(self::URL);
+        $I->waitForElementVisible(self::DRIVE_NAV_ASIDE, 120);
+        $I->waitAndClick(self::NEW_DOCUMENT_AREA_BUTTON);
+        $I->waitAndFill(self::DOCUMENT_AREA_NAME_INPUT, "{$documentAreaName}");
+        $I->waitAndClick(self::PRIMARY_BUTTON);
+    }
+
     public function grantAccessToDirectory($documentAreaName, $user) : void
     {
         $I = $this->acceptanceTester;
 
-        $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent'); 
-        $I->waitAndClick(Locator::contains('a', "{$documentAreaName}"), 12);
-        $I->waitAndClick('#users-tab', 12);
-        $I->waitAndClick(Locator::contains('fds-button button.btn-text-flush', ' Add users '), 12);        
-        $I->waitAndClick(Locator::contains('button', 'Select users'), 12);
-        $I->waitForElementVisible(Locator::contains('label.custom-control-label', $user), 12);
+        $I->amOnUrl(self::URL); 
+        $I->waitAndClick(Locator::contains('a', "{$documentAreaName}"), 60);
+        $I->waitAndClick(['css' =>'#users-tab'], 12);
+        $I->waitAndClick(Locator::contains('fds-button button.btn-text-flush', ' Add users '), 60);        
+        $I->waitAndClick(Locator::contains('button', 'Select users'), 60);
+        $I->waitForElementVisible(Locator::contains('label.custom-control-label', $user), 60);
         $I->checkOption(Locator::contains('label.custom-control-label', $user));
-        $I->waitAndClick(Locator::contains('fds-button > button.btn-primary', ' Add users '), 12);
-        $I->waitAndClick(Locator::contains('fds-selector > button', 'Viewer'), 12);
+        $I->waitAndClick(Locator::contains('fds-button > button.btn-primary', ' Add users '), 60);
+        $I->waitAndClick(Locator::contains('fds-selector > button', 'Viewer'), 60);
         $I->click(Locator::contains('fds-card-footer button', 'Save'));
-        $I->waitForElementNotVisible('.alert-success', 60);
+        $I->waitForElementNotVisible(['css' => '.alert-success'], 60);
     }
 
     public function documentAreaDelete($directoryName) : void
@@ -119,6 +130,7 @@ class DocumentsPage
         $I->click(['css' => "div[row-id='{$directoryName}'] fds-icon-button[icon='more'] > button"]);   
         $I->click(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-actions-delete-directory"] > button']);
         $I->click(self::CONFIRM_DELETE);
+        $I->reloadPage();
         $I->dontSeeElement(['css' => "div.ag-row-even[row-id='{$directoryName}']"]);
     }
     

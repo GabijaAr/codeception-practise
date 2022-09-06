@@ -18,18 +18,33 @@ use Tests\Support\Helper\DocumentHelper;
 
 class DocumentsCest
 {
-    private $username = 'Acc2@testermail.com';
-    private $password = 'PASS*w01rd';
-    private $secondUser= ' Acc3 test company ';
-    private $secondUsername = 'Acc3@testermail.com';
-    private $secondPassword = 'PASS*w01rd3';
-    
-    private $documentAreaName = 'test api77';
+    public $mainUserAcc = [
+        'username' => 'Acc2@testermail.com',
+        'password' => 'PASS*w01rd'
+    ];
 
-    private $parentDirectoryId = 2930954;
-    private $directoryName = 'Directory';
-    private $userId = '35703'; 
-    private $permission = 'viewer';
+    public $secondUserAcc = [
+        'user' => ' Acc3 test company ',
+        'username' => 'Acc3@testermail.com',
+        'password' => 'PASS*w01rd3'
+    ];
+
+
+    // private $username = 'Acc2@testermail.com';
+    // private $password = 'PASS*w01rd';
+
+    // private $secondUser= ' Acc3 test company ';
+    // private $secondUsername = 'Acc3@testermail.com';
+    // private $secondPassword = 'PASS*w01rd3';
+    
+    private $documentAreaName = 'test api79';
+
+    public $directoryParam = [
+        'parentDirectoryId' => 2930954,
+        'directoryName' => 'Directory4',
+        'userId' => '35703',
+        'permission' => 'viewer'
+    ];
 
     public $parametersFile = [
         'contentType' => "text/plain",
@@ -49,11 +64,11 @@ class DocumentsCest
         \Codeception\Scenario $scenario) : void
     {
         $I->setPageAndCookie(LoginPage::URL);        
-        $documentsPage->redirectToDocumentsPage($this->username, $this->password, $loginPage);
+        $documentsPage->redirectToDocumentsPage($this->mainUserAcc, $loginPage);
 
         if($scenario->current('name') === 'tryToFileUploadApi')
         {
-            $I->loginApi($this->username, $this->password);
+            $I->loginApi($this->mainUserAcc);
         }
     }
 
@@ -71,14 +86,18 @@ class DocumentsCest
     }
 
     // tests
+    #[Incomplete('after update attachAFile does not work')]
     public function tryToUploadFile(
         AcceptanceTester $I, 
         LoginPage $loginPage, 
         DocumentsPage $documentsPage) : void
     {
-        $documentsPage->fileUpload('d913d35c-915c-41db-a126-613d04694752.txt');
-        $documentsPage->fileDelete();
+        $documentsPage->createDocumentArea('test 14');
+        $documentsPage->fileUpload('d913d35c-915c-41db-a126-613d04694752.txt', 'test 14');
+
+        // $documentsPage->fileDelete();
     }
+
 
     public function tryToCreateDocumentArea(
         AcceptanceTester $I, 
@@ -86,13 +105,9 @@ class DocumentsCest
         DocumentsPage $documentsPage, 
         PortalPage $portalPage) : void
     {
-        $I->amOnUrl(DocumentsPage::URL);
-        $I->waitForElementVisible(DocumentsPage::DRIVE_NAV_ASIDE, 120);
-        $I->waitAndClick(DocumentsPage::NEW_DOCUMENT_AREA_BUTTON);
-        $I->waitAndFill(DocumentsPage::DOCUMENT_AREA_NAME_INPUT, "{$this->documentAreaName}");
-        $I->waitAndClick(DocumentsPage::PRIMARY_BUTTON);
-        
-        $documentsPage->grantAccessToDirectory($this->documentAreaName);
+        $documentsPage->createDocumentArea($this->documentAreaName);        
+        $documentsPage->grantAccessToDirectory($this->documentAreaName, $this->secondUserAcc['user']);
+        // $documentsPage->fileDelete();
 
         // // check acess
         // $I ->amOnUrl('https://portal-develop-devdb.staging.cozone.com/ui/#/');
@@ -155,21 +170,16 @@ class DocumentsCest
         LoginPage $loginPage) : void
     {       
 
-        $newDirect = $documentHelper->createNewDirectory(
-            $this->parentDirectoryId, 
-            $this->directoryName , 
-            $this->userId, 
-            $this->permission, 
-            $passwordHelper);
+        $newDirect = $documentHelper->createNewDirectory($this->directoryParam, $passwordHelper);
         $this->parametersFile['parentDirectoryId'] = $newDirect;
 
         $newFile = $documentHelper->uploadNewFile($this->parametersFile, $this->file);
         $I->reloadPage();
 
-        $documentsPage->grantAccessToDirectory($this->directoryName, $this->secondUser); 
+        $documentsPage->grantAccessToDirectory($this->directoryParam['directoryName'], $this->secondUserAcc['user']); 
         // // // multisession testing
-        $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
-        $I->waitAndClick(Locator::contains('a', $this->directoryName), 12);
+        $I->amOnUrl(DocumentsPage::URL);
+        $I->waitAndClick(Locator::contains('a', $this->directoryParam['directoryName']), 12);
         $I->waitAndClick(Locator::contains('div.text-truncate a', $this->parametersFile['relativePath']), 12);
 
         $I->waitAndclick(['css' => "div[row-id='{$newFile}'] fds-icon-button[icon='send'] button "]);
@@ -178,8 +188,8 @@ class DocumentsCest
         $I->checkOption(Locator::contains('fds-selector-menu-checkbox > label', ' Acc3 test company '));
         $I->waitAndClick(Locator::contains('button', ' Request for approval '));
 
-        $secondUser = $I->haveFriend('secondUser');
-        $secondUser->does(function (AcceptanceTester $I) use ($loginPage, $documentsPage, $newFile){
+        $secondUserF = $I->haveFriend('secondUser');
+        $secondUserF->does(function (AcceptanceTester $I) use ($loginPage, $documentsPage, $newFile){
             $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
             $I->maximizeWindow();
             $I->resetCookie('OptanonAlertBoxClosed');
@@ -189,9 +199,9 @@ class DocumentsCest
             $I->wait(10);
             $I->reloadPage();           
             $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
-            $loginPage->login($this->secondUsername, $this->secondPassword );
+            $loginPage->login($this->$secondUserAcc);
 
-            $I->waitAndClick(Locator::contains('a', "{$this->directoryName}"));
+            $I->waitAndClick(Locator::contains('a', $this->directoryParam['directoryName']));
             $I->waitAndClick(Locator::contains('div.text-truncate a', $this->parametersFile['relativePath']), 12);
             $I->waitAndclick(['css' => "div[row-id='{$newFile}'] fds-icon-button[icon='approved-action'] button "]);
             $I->waitAndClick(Locator::contains('button', ' Approve '));
@@ -199,8 +209,8 @@ class DocumentsCest
 
         $I->reloadPage();
         $I->waitAndClick(Locator::contains("div[row-id='{$newFile}'] fds-tag.tag--green > span", " Approved "));
-        $I->waitForElementVisible(Locator::contains('div.popover a', "{$this->secondUsername}"), 60);
-        $I->seeElement(Locator::contains('div.popover a', "{$this->secondUsername}"));
+        $I->waitForElementVisible(Locator::contains('div.popover a', "{$this->secondUserAcc['secondUsername']}"), 60);
+        $I->seeElement(Locator::contains('div.popover a', "{$this->secondUserAcc['secondUsername']}"));
 
         $secondUser->leave();
 
