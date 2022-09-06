@@ -41,7 +41,7 @@ class DocumentsCest
 
     public $directoryParam = [
         'parentDirectoryId' => 2930954,
-        'directoryName' => 'Directory4',
+        'directoryName' => 'Directory11',
         'userId' => '35703',
         'permission' => 'viewer'
     ];
@@ -190,7 +190,7 @@ class DocumentsCest
 
         $secondUserF = $I->haveFriend('secondUser');
         $secondUserF->does(function (AcceptanceTester $I) use ($loginPage, $documentsPage, $newFile){
-            $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
+            $I->amOnUrl(DocumentsPage::URL);
             $I->maximizeWindow();
             $I->resetCookie('OptanonAlertBoxClosed');
             $I->wait(5);
@@ -198,21 +198,21 @@ class DocumentsCest
             $I->setCookie('OptanonAlertBoxClosed', '2022-08-23T11:29:30.562Z');
             $I->wait(10);
             $I->reloadPage();           
-            $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
-            $loginPage->login($this->$secondUserAcc);
+            $I->amOnUrl(DocumentsPage::URL);
+            $loginPage->login($this->secondUserAcc);
 
             $I->waitAndClick(Locator::contains('a', $this->directoryParam['directoryName']));
-            $I->waitAndClick(Locator::contains('div.text-truncate a', $this->parametersFile['relativePath']), 12);
-            $I->waitAndclick(['css' => "div[row-id='{$newFile}'] fds-icon-button[icon='approved-action'] button "]);
+            $I->waitAndClick(Locator::contains('div.text-truncate a', $this->parametersFile['relativePath']), 60);
+            $I->waitAndclick(['css' => "div[row-id='{$newFile}'] fds-icon-button[icon='approved-action'] button "], 60);
             $I->waitAndClick(Locator::contains('button', ' Approve '));
         });
 
         $I->reloadPage();
         $I->waitAndClick(Locator::contains("div[row-id='{$newFile}'] fds-tag.tag--green > span", " Approved "));
-        $I->waitForElementVisible(Locator::contains('div.popover a', "{$this->secondUserAcc['secondUsername']}"), 60);
-        $I->seeElement(Locator::contains('div.popover a', "{$this->secondUserAcc['secondUsername']}"));
+        $I->waitForElementVisible(Locator::contains('div.popover a', $this->secondUserAcc['username']), 60);
+        $I->seeElement(Locator::contains('div.popover a', $this->secondUserAcc['username']));
 
-        $secondUser->leave();
+        $secondUserF->leave();
 
         $documentsPage->documentAreaDelete($newDirect);
     }

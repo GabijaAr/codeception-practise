@@ -38,12 +38,12 @@ class LoginPage
         $this->acceptanceTester = $I;
     }
 
-    public function login($name, $password)
+    public function login(array $user)
     {
         $I = $this->acceptanceTester;
 
-        $I->waitAndFill(self::USERNAME_FIELD, $name);
-        $I->waitAndFill(self::PASSWORD_FIELD, $password);
+        $I->waitAndFill(self::USERNAME_FIELD, $user['username']);
+        $I->waitAndFill(self::PASSWORD_FIELD, $user['password']);
         $I->waitAndClick(self::LOGIN_BUTTON);
     }
 

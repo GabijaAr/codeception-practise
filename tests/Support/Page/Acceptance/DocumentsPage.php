@@ -53,7 +53,7 @@ class DocumentsPage
     {
         $I = $this->acceptanceTester;
 
-        $loginPage->login($user['username'], $user['password']);
+        $loginPage->login($user);
         $I->waitForElementVisible(PortalPage::PORTAL_NEWS_SECT, 120);
         $I->amOnUrl(self::URL);
     }
