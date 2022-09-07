@@ -19,6 +19,9 @@ use Tests\Support\Helper\DocumentHelper;
 class DocumentsCest
 {
     private $documentAreaName = 'Doc Area';
+    public $file = 'd913d35c-915c-41db-a126-613d04694752.txt';
+    public $company = 5074;
+    public $companyName = 'Test Company 09/2022'; 
 
     public $mainUserAcc = [
         'username' => 'Acc2@testermail.com',
@@ -44,10 +47,7 @@ class DocumentsCest
         'relativePath' => 'API',
         'parentDirectoryId' => 0,  
     ];
-
-    public $file = 'd913d35c-915c-41db-a126-613d04694752.txt';
-    public $apiDirectory = '';
-
+   
     public $cookieDefaultParams = [
         'path' => '/',
         'secure' => true,
@@ -65,6 +65,7 @@ class DocumentsCest
         $I->setPageAndCookie(LoginPage::URL);        
         $documentsPage->redirectToDocumentsPage($this->mainUserAcc, $loginPage);
         $I->loginApi($this->mainUserAcc);
+        $I->setCookie('automation_testing', 'selenium');       
     }
 
     public function _after( 
@@ -88,13 +89,12 @@ class DocumentsCest
         PasswordHelper $passwordHelper,
         ) : void
     {
-        $fileName = 'd913d35c-915c-41db-a126-613d04694752.txt';
         $documentsPage->createDocumentArea($this->documentAreaName);
         $documentsPage->fileUpload($fileName, $this->documentAreaName);
-        $directoryId = $documentHelper->getDocumentAreaId(5074, $this->documentAreaName);
-        $fileId = $documentHelper->getFileId( $directoryId, 'd913d35c-915c-41db-a126-613d04694752.txt', $passwordHelper);
-        $documentsPage->fileDelete('Doc Area', $fileId);
-        
+        $directoryId = $documentHelper->getDocumentAreaId($this->company, $this->documentAreaName);
+        $fileId = $documentHelper->getFileId( $directoryId, $this->file, $passwordHelper);
+        $documentsPage->fileDelete($this->documentAreaName, $fileId);
+        $documentsPage->directoryDelete($this->documentAreaName, $directoryId);
     }
 
 
@@ -108,52 +108,52 @@ class DocumentsCest
         $documentsPage->createDocumentArea($this->documentAreaName);        
         $documentsPage->grantAccessToDirectory($this->documentAreaName, $this->secondUserAcc['user']);
 
-        $directoryId = $documentHelper->getDocumentAreaId(5074, $this->documentAreaName);
+        $directoryId = $documentHelper->getDocumentAreaId($this->company, $this->documentAreaName);
         $documentsPage->directoryDelete($this->documentAreaName, $directoryId);
     }
 
+    
     public function tryToSetUpStructure(AcceptanceTester $I) : void
     {
         $I->amOnUrl(DocumentsPage::URL);
         $I->waitForElementVisible(DocumentsPage::DRIVE_NAV_ASIDE, 60);
-        $I->waitAndClick(['css' => 'a[href="/ui/default-structure-setup"]'], 60);
+        $I->waitAndClick(DocumentsPage::NAV_SETUP_STRUCTURE, 60);
 
-        $I->waitAndClick('fds-selector-field[formcontrolname="country"]', 60);               
-        $I->waitForElementVisible([ 'xpath' => "//button[text()=' Sweden ']"], 60);
-        // $I->waitForElementVisible(Locator::contains('button.selector__item', ' Sweden '), 60);
-        $I->click([ 'xpath' => "//button[text()=' Sweden ']"]);         
-        // $I->click(Locator::contains('button.selector__item', ' Sweden '));
-        $I->waitAndClick('fds-selector-field[formcontrolname="year"]', 60);
-
-        $I->waitAndClick([ 'xpath' => "//button[text()=' 2024 ']"], 60);        
+        $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_COUNTRY, 60);               
+        $I->waitVisibleAndClick(DocumentsPage::STRUCTURE_COUTRY_SWEDEN, 60);
+        // $I->waitVisibleAndClick(Locator::contains('button.selector__item', ' Sweden '), 60);
+        
+        $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_YEAR, 60);
+        $I->waitAndClick(DocumentsPage::STRUCTURE_YEAR_2024, 60);        
         // $I->waitAndClick(Locator::contains('button.selector__item', ' 2024 '), 60);
-        $I->waitAndClick('fds-selector-field[formcontrolname="language"]', 60);  
-        $I->waitAndClick([ 'xpath' => "//button[text()=' EN ']"], 60);              
+
+        $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_LANGUAGE, 60);  
+        $I->waitAndClick(DocumentsPage::STRUCTURE_LANGUAGE_EN, 60);              
         // $I->waitAndClick(Locator::contains('button.selector__item', ' EN '), 60);
 
-        $I->waitAndClick('fds-selector-field[formcontrolname="documentAreas"]', 60);
-        $I->waitAndClick([ 'xpath' => "//label[text()=' HR Reports ']"], 60);        
+        $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_DOC_AREAS, 60);
+        $I->waitAndClick(DocumentsPage::STRUCTURE_DOC_AREAS_HR, 60);        
         // $I->waitAndClick(Locator::contains('label.custom-control-label', 'HR Reports'), 60);
-        $I->waitAndClick(['xpath' => "//label[text()=' Finance Reports ']"], 60);
+        $I->waitAndClick(DocumentsPage::STRUCTURE_DOC_AREAS_FINANCE, 60);
         // $I->waitAndClick(Locator::contains('label.custom-control-label', 'Finance Reports'), 60);
 
-        $I->waitAndClick('fds-selector-field[formcontrolname="companies"]', 60); 
-        $I->fillField(['css' => 'fds-selector-field[formcontrolname="companies"] input'], 'Test Company 09/2022');
+        $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_COMPANIES, 60); 
+        $I->fillField(DocumentsPage::STRUCTURE_COMPANIES_INPUT, $this->companyName);
         $I->waitAndClick(['xpath' => "//label[text()=' Test Company 09/2022 ']"], 60);        
         // $I->waitAndClick(Locator::contains('label', ' Test Company 09/2022 '), 60);
 
-        $I->waitAndClick(['xpath' => "//button[text()=' Create structure ']"], 60);
+        $I->waitAndClick(DocumentsPage::STRUCTURE_CREATE, 60);
         // $I->waitAndClick(Locator::contains('button', ' Create structure '), 60);
-        $I->waitForElementVisible('div.alert-success', 60);
+        $I->waitForElementVisible(DocumentsPage::ALERT_SUCCESS, 60);
 
-        $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
-        $I->waitAndClick(Locator::contains('fds-tree-item[data-test-id="sidebar-current-company"] a', 'Test Company 09/2022'), 60);
+        $I->amOnUrl(DocumentsPage::URL);
+        $I->waitAndClick(Locator::contains('fds-tree-item[data-test-id="sidebar-current-company"] a', $this->companyName), 60);
         $I->waitAndClick(Locator::contains('fds-tree-item[icon="document-area"] a', 'Finance Reports'), 60);
         $I->seeElement(Locator::contains('fds-tree-item a', 'From Azets'));
         $I->seeElement(Locator::contains('fds-tree-item a', 'To Azets'));
 
-        $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
-        $I->waitAndClick(Locator::contains('fds-tree-item[data-test-id="sidebar-current-company"] a', 'Test Company 09/2022'), 60);        
+        $I->amOnUrl(DocumentsPage::URL);
+        $I->waitAndClick(Locator::contains('fds-tree-item[data-test-id="sidebar-current-company"] a', $this->companyName), 60);        
         $I->waitAndClick(Locator::contains('fds-tree-item[icon="document-area"] a', 'HR Reports'), 60);
         $I->seeElement(Locator::contains('fds-tree-item a', 'From Azets'));
         $I->seeElement(Locator::contains('fds-tree-item a', 'To Azets'));
@@ -175,14 +175,14 @@ class DocumentsCest
         $I->reloadPage();
 
         $documentsPage->grantAccessToDirectory($this->directoryParam['directoryName'], $this->secondUserAcc['user']); 
-        // multisession testing
+
         $I->amOnUrl(DocumentsPage::URL);
         $I->waitAndClick(Locator::contains('a', $this->directoryParam['directoryName']), 12);
         $I->waitAndClick(Locator::contains('div.text-truncate a', $this->parametersFile['relativePath']), 12);
 
         $I->waitAndclick(['css' => "div[row-id='{$newFile}'] fds-icon-button[icon='send'] button "]);
         $I->waitAndClick(Locator::contains('button', 'Select approvers'));
-        $I->waitForElementVisible('fds-selector-menu-checkbox > label', 60);
+        $I->waitForElementVisible(DocumentsPage::REQUEST_SELECT_APPROVERS, 60);
         $I->checkOption(Locator::contains('fds-selector-menu-checkbox > label', ' Acc3 test company '));
         $I->waitAndClick(Locator::contains('button', ' Request for approval '));
 
@@ -211,11 +211,11 @@ class DocumentsCest
         $secondUserF->does(function (AcceptanceTester $I) use ($loginPage, $documentsPage, $newDirect, $newFile){
             $I->amOnUrl(DocumentsPage::URL);
             $I->maximizeWindow();
-            $I->waitForElementVisible("div[row-id='{$newFile}'] a[data-gtm-id='file-breadcrumbs-cell-directory']", 60);
+            $I->waitForElementVisible(['css' => "div[row-id='{$newFile}'] a[data-gtm-id='file-breadcrumbs-cell-directory']"], 60);
             $I->moveMouseOver(['css' => "div[row-id='{$newFile}'] a[data-gtm-id='file-breadcrumbs-cell-directory']"]);
-            $tooltipLocationInfo = $I->grabAttributeFrom("div[row-id='{$newFile}'] div.tooltip-inner", 'innerHTML' );
-            var_dump($tooltipLocationInfo);
-            $I->seeElement(Locator::contains("div[row-id={$newFile}] div.tooltip-inner", $tooltipLocationInfo));
+            $I->wait(10);
+            $tooltipLocationInfo = $I->grabTextFrom(['css' => 'body > div.tooltip.show div.tooltip-inner']);
+            $I->see($tooltipLocationInfo, ['css' => 'div.tooltip-inner']);
         });
 
         $secondUserF->leave();

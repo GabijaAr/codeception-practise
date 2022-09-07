@@ -20,17 +20,36 @@ class DocumentsPage
     /**
      * @var \Tests\Support\AcceptanceTester;
      */
-    public const URL = 'https://documents-develop-devdb.staging.cozone.com/ui/recent';
-    public const URL_FILE_DROP = 'https://documents-develop-devdb.staging.cozone.com/ui/file-drop';
+    public const URL = 'https://documents-develop-devdb.staging.cozone.com/ui/recent'; //
+    public const URL_FILE_DROP = 'https://documents-develop-devdb.staging.cozone.com/ui/file-drop'; //
 
-    public const DRIVE_NAV_ASIDE = ['css' => 'fds-layout-aside'];
+    public const DRIVE_NAV_ASIDE = ['css' => 'fds-layout-aside']; //SIDEBAR?
+    public const SIDEBAR_CURRENT_COMPANY = ['css' => 'fds-tree-item[data-test-id="sidebar-current-company"] a']; //
+    
     public const FILE_TO_CONSULT_BUTTON = ['css' => 'fds-tree-item a[href="/ui/file-drop"]'];
     public const FILE_UPLOAD_BUTTON = ['css' => 'doc-file-selector > fds-button'];
     public const MAIN_CARD = ['css' => 'doc-file-drop fds-card'];
     public const FILE_ATTACHED = 'input[data-test-id="file-upload-selector"]';    //
-    public const FILE_UPLOAD_ALERT = ['css' => 'doc-uploader.shadow rounded fds-card-header']; 
+    public const FILE_UPLOAD_ALERT = ['css' => 'doc-uploader.shadow rounded fds-card-header'];
 
     
+    public const NAV_SETUP_STRUCTURE = ['css' => 'a[href="/ui/default-structure-setup"]'];
+
+    // setup structure
+    public const STRUCTURE_FIELD_COUNTRY = ['css' => 'fds-selector-field[formcontrolname="country"]'];
+    public const STRUCTURE_FIELD_YEAR = ['css' => 'fds-selector-field[formcontrolname="year"]'];
+    public const STRUCTURE_FIELD_LANGUAGE = ['css' => 'fds-selector-field[formcontrolname="language"]'];
+    public const STRUCTURE_FIELD_DOC_AREAS = ['css' => 'fds-selector-field[formcontrolname="documentAreas"]'];    
+    public const STRUCTURE_FIELD_COMPANIES = ['css' => 'fds-selector-field[formcontrolname="companies"]']; 
+    public const STRUCTURE_CREATE = ['xpath' => "//button[text()=' Create structure ']"];      
+    
+    public const STRUCTURE_COUTRY_SWEDEN = [ 'xpath' => "//button[text()=' Sweden ']"];
+    public const STRUCTURE_YEAR_2024 = [ 'xpath' => "//button[text()=' 2024 ']"];
+    public const STRUCTURE_LANGUAGE_EN = [ 'xpath' => "//button[text()=' EN ']"];
+    public const STRUCTURE_DOC_AREAS_HR = [ 'xpath' => "//label[text()=' HR Reports ']"];    
+    public const STRUCTURE_DOC_AREAS_FINANCE = ['xpath' => "//label[text()=' Finance Reports ']"];   
+    public const STRUCTURE_COMPANIES_INPUT = ['css' => 'fds-selector-field[formcontrolname="companies"] input'];
+
     public const MAIN_CARD_HEADER = ['css' => '.ag-header.ag-focus-managed'];
     public const FIRST_ROW_CHECK = ['css' => 'fds-icon-button[icon="more"] > button:first-of-type'];      
     public const FIRST_ROW = ['css' => '.ag-pinned-right-cols-container > div[role="row"]:first-of-type']; 
@@ -43,8 +62,10 @@ class DocumentsPage
     public const DOCUMENT_AREA_NAME_INPUT = ['css' => 'fds-text-field > input[placeholder="Document area name"]'];
     public const PRIMARY_BUTTON = ['css' => 'button.btn-primary'];
 
-    public const SIDEBAR_DOCUMENT_AREA_SELECTOR = ['css' => 'fds-tree-item[data-test-id="sidebar-current-company"] a'];
-    public const SHOW_MORE_ACTIONS_BUTTON = [];
+    public const REQUEST_SELECT_APPROVERS = ['css' => 'fds-selector-menu-checkbox > label'];
+    
+    public const ALERT_SUCCESS = ['css' => 'div.alert-success'];
+
 
     protected $acceptanceTester;
 
@@ -74,7 +95,6 @@ class DocumentsPage
         $I->waitAndClick(['css' => '#more-actions'], 60);  
         $I->waitAndClick(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button'], 60);
         $I->attachFile('input[data-test-id="file-upload-selector"]', $file);
-
         $I->waitForElementVisible(['css' => 'fds-text-field > input'], 60);
         $I->fillField(['css' => 'fds-text-field > input'], 'Test Company 09/2022');
         $I->waitAndClick(Locator::contains('button', " Upload files  "), 60);

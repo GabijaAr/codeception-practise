@@ -72,7 +72,7 @@ class AcceptanceTester extends \Codeception\Actor
     } 
 
 
-    public function checkCheckbox($selector)
+    public function waitVisibleAndClick($selector)
     {
         $I = $this;
         $I->waitForElementVisible($selector, 60);

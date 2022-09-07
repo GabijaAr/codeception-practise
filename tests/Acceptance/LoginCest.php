@@ -57,7 +57,7 @@ class LoginCest
 
     public function tryToRememberMe(AcceptanceTester $I, LoginPage $loginPage, PortalPage $portalPage) : void
     {
-        $I->checkCheckbox(LoginPage::CHECK_BOX);
+        $I->waitVisibleAndClick(LoginPage::CHECK_BOX);
         $loginPage->login($this->username, $this->password);
         $loginPage->logout($portalPage);
         $I->waitAndSeeElement(LoginPage::USERNAME_FIELD);
