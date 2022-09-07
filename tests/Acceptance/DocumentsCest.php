@@ -18,7 +18,7 @@ use Tests\Support\Helper\DocumentHelper;
 
 class DocumentsCest
 {
-    private $documentAreaName = 'test api79';
+    private $documentAreaName = 'Doc Area';
 
     public $mainUserAcc = [
         'username' => 'Acc2@testermail.com',
@@ -33,7 +33,7 @@ class DocumentsCest
 
     public $directoryParam = [
         'parentDirectoryId' => 2930954,
-        'directoryName' => 'Directory11',
+        'directoryName' => 'Directory',
         'userId' => '35703',
         'permission' => 'viewer'
     ];
@@ -89,10 +89,9 @@ class DocumentsCest
         ) : void
     {
         $fileName = 'd913d35c-915c-41db-a126-613d04694752.txt';
-        $documentsPage->createDocumentArea('test 14');
-        $documentsPage->fileUpload($fileName, 'test 14');
-        $directoryName = 'test 14';
-        $directoryId = $documentHelper->getDocumentAreaId(5074, $directoryName);
+        $documentsPage->createDocumentArea($this->documentAreaName);
+        $documentsPage->fileUpload($fileName, $this->documentAreaName);
+        $directoryId = $documentHelper->getDocumentAreaId(5074, $this->documentAreaName);
         $fileId = $documentHelper->getFileId( $directoryId, 'd913d35c-915c-41db-a126-613d04694752.txt', $passwordHelper);
         $documentsPage->fileDelete('Doc Area', $fileId);
         
@@ -108,7 +107,7 @@ class DocumentsCest
     {
         $documentsPage->createDocumentArea($this->documentAreaName);        
         $documentsPage->grantAccessToDirectory($this->documentAreaName, $this->secondUserAcc['user']);
-        
+
         $directoryId = $documentHelper->getDocumentAreaId(5074, $this->documentAreaName);
         $documentsPage->directoryDelete($this->documentAreaName, $directoryId);
     }
@@ -214,9 +213,9 @@ class DocumentsCest
             $I->maximizeWindow();
             $I->waitForElementVisible("div[row-id='{$newFile}'] a[data-gtm-id='file-breadcrumbs-cell-directory']", 60);
             $I->moveMouseOver(['css' => "div[row-id='{$newFile}'] a[data-gtm-id='file-breadcrumbs-cell-directory']"]);
-            // $tooltipLocationInfo = $I->grabTextFrom("div[row-id='{$newFile}'] div.tooltip-inner");
-            // var_dump($tooltipLocationInfo);
-            // $I->seeElement(Locator::contains("div[row-id={$newFile}] div.tooltip-inner", $tooltipLocationInfo));
+            $tooltipLocationInfo = $I->grabAttributeFrom("div[row-id='{$newFile}'] div.tooltip-inner", 'innerHTML' );
+            var_dump($tooltipLocationInfo);
+            $I->seeElement(Locator::contains("div[row-id={$newFile}] div.tooltip-inner", $tooltipLocationInfo));
         });
 
         $secondUserF->leave();

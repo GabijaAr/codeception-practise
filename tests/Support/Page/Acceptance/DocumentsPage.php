@@ -71,14 +71,9 @@ class DocumentsPage
 
         $I->waitAndClick(Locator::contains('fds-tree-item a', 'Test Company 09/2022'),60);
         $I->waitAndClick("doc-file-name-cell > div[title='{$documentAreaName}'] a",60);
-        // $I->reloadPage();
-        $I->wait(5);
-        // $I->waitForElementVisible('fds-dropzone', 60);
         $I->waitAndClick(['css' => '#more-actions'], 60);  
-        // $I->waitAndClick(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button.dropdown-item'], 60);
-        $I->waitAndClick(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button']);
-        // $I->wait(2);
-        $I->attachFile('doc-file-selector > input[data-test-id="file-upload-selector"]', $file);
+        $I->waitAndClick(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button'], 60);
+        $I->attachFile('input[data-test-id="file-upload-selector"]', $file);
 
         $I->waitForElementVisible(['css' => 'fds-text-field > input'], 60);
         $I->fillField(['css' => 'fds-text-field > input'], 'Test Company 09/2022');
@@ -155,5 +150,4 @@ class DocumentsPage
         $I->reloadPage();
         $I->dontSeeElement(['css' => "div.ag-row-even[row-id='{$directoryName}']"]);
     }
-    
 }
