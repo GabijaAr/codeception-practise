@@ -15,22 +15,47 @@ class DocumentHelper extends \Codeception\Module
 {
 
 
-    public function getDocumentAreaFiles($companyId)
+    public function getDocumentAreaId($companyId, $directoryName)
     {
+        $I = $this->getModule(name: 'REST');
+        
+        $I->haveHttpHeader('accept', 'application/json');        
+        $I->haveHttpHeader('content-type', 'application/json');    
+
+        $directoriesList= $I->sendGET(
+            "https://documents-develop-devdb.staging.cozone.com/v1/api/companies/{$companyId}/document-areas"
+        );
+        $I->seeResponseCodeIsSuccessful();
+        $directoriesList = json_decode($directoriesList, true);
+
+        $directoryId = 0;
+        foreach ($directoriesList as $key => $value) {
+            if( $directoryName === $value['name']){
+                $directoryId += $value['id'];
+            }         
+        }
+        return $directoryId;
+    }
+
+    public function getFileId($directoryId, $fileName){
         $I = $this->getModule(name: 'REST');
 
         $I->haveHttpHeader('accept', 'application/json');        
-        $I->haveHttpHeader('content-type', 'application/json');    
-        $I->amBearerAuthenticated($passwordHelper->getToken()); 
-        
-        return $I->sendGET(
-            "https://documents-develop-devdb.staging.cozone.com/v1/api/companies/'{$companyId}'/document-areas"
+        $I->haveHttpHeader('content-type', 'application/json');
+
+        $I->sendGET(
+            "https://documents-develop-devdb.staging.cozone.com/v1/api/directories/$directoryId"
         );
         $I->seeResponseCodeIsSuccessful();
-    }
+        $documentArea = $I->grabDataFromResponseByJsonPath("__children")[0];
 
-    public function getFileId(){
-
+        $fileId = 0;
+        foreach ($documentArea as $key => $value) {
+            if( $fileName === $value['name']){
+                $fileId += $value['id'];
+            }         
+        }
+        return $fileId;
     }
 
     public function createNewDirectory( array $directoryParam, $passwordHelper ) : int 

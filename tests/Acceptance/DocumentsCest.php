@@ -18,6 +18,8 @@ use Tests\Support\Helper\DocumentHelper;
 
 class DocumentsCest
 {
+    private $documentAreaName = 'test api79';
+
     public $mainUserAcc = [
         'username' => 'Acc2@testermail.com',
         'password' => 'PASS*w01rd'
@@ -28,16 +30,6 @@ class DocumentsCest
         'username' => 'Acc3@testermail.com',
         'password' => 'PASS*w01rd3'
     ];
-
-
-    // private $username = 'Acc2@testermail.com';
-    // private $password = 'PASS*w01rd';
-
-    // private $secondUser= ' Acc3 test company ';
-    // private $secondUsername = 'Acc3@testermail.com';
-    // private $secondPassword = 'PASS*w01rd3';
-    
-    private $documentAreaName = 'test api79';
 
     public $directoryParam = [
         'parentDirectoryId' => 2930954,
@@ -56,6 +48,13 @@ class DocumentsCest
     public $file = 'd913d35c-915c-41db-a126-613d04694752.txt';
     public $apiDirectory = '';
 
+    public $cookieDefaultParams = [
+        'path' => '/',
+        'secure' => true,
+        'httpOnly' => false,
+        'domain' => 'idp-develop-devdb.staging.cozone.com'
+    ];
+
     public function _before(
         AcceptanceTester $I,
         LoginPage $loginPage,
@@ -65,11 +64,7 @@ class DocumentsCest
     {
         $I->setPageAndCookie(LoginPage::URL);        
         $documentsPage->redirectToDocumentsPage($this->mainUserAcc, $loginPage);
-
-        if($scenario->current('name') === 'tryToFileUploadApi')
-        {
-            $I->loginApi($this->mainUserAcc);
-        }
+        $I->loginApi($this->mainUserAcc);
     }
 
     public function _after( 
@@ -79,23 +74,28 @@ class DocumentsCest
     {
         if($scenario->current('name') === 'tryToCreateDocumentArea')
         {
-            $I->waitAndClick(['css' => 'fds-tree-item[data-test-id="sidebar-current-company"] a']);
-            // delete Data Area via id
+            $I->waitAndClick(DocumentsPage::SIDEBAR_DOCUMENT_AREA_SELECTOR, 60);
         }
-
     }
 
     // tests
-    #[Incomplete('after update attachAFile does not work')]
+    // #[Incomplete('after update attachAFile does not work')]
     public function tryToUploadFile(
         AcceptanceTester $I, 
         LoginPage $loginPage, 
-        DocumentsPage $documentsPage) : void
+        DocumentsPage $documentsPage,
+        DocumentHelper $documentHelper,
+        PasswordHelper $passwordHelper,
+        ) : void
     {
+        $fileName = 'd913d35c-915c-41db-a126-613d04694752.txt';
         $documentsPage->createDocumentArea('test 14');
-        $documentsPage->fileUpload('d913d35c-915c-41db-a126-613d04694752.txt', 'test 14');
-
-        // $documentsPage->fileDelete();
+        $documentsPage->fileUpload($fileName, 'test 14');
+        $directoryName = 'test 14';
+        $directoryId = $documentHelper->getDocumentAreaId(5074, $directoryName);
+        $fileId = $documentHelper->getFileId( $directoryId, 'd913d35c-915c-41db-a126-613d04694752.txt', $passwordHelper);
+        $documentsPage->fileDelete('Doc Area', $fileId);
+        
     }
 
 
@@ -103,22 +103,14 @@ class DocumentsCest
         AcceptanceTester $I, 
         LoginPage $loginPage, 
         DocumentsPage $documentsPage, 
-        PortalPage $portalPage) : void
+        PortalPage $portalPage,
+        DocumentHelper $documentHelper) : void
     {
         $documentsPage->createDocumentArea($this->documentAreaName);        
         $documentsPage->grantAccessToDirectory($this->documentAreaName, $this->secondUserAcc['user']);
-        // $documentsPage->fileDelete();
-
-        // // check acess
-        // $I ->amOnUrl('https://portal-develop-devdb.staging.cozone.com/ui/#/');
-        // // $I->seeElement('button._hj-kWRoL__styles__openStateToggle');
-        // $loginPage->logout($portalPage);
-
-        // // $I->waitAndClick(['css' => 'fds-header-user button.user.nav-link']);
-        // // $I->click(Locator::contains('fds-header-user-nav-item', ' Logout '));
-
-        // $I->waitForElementVisible(LoginPage::LOGIN_FORM, 60);
-        // $I->seeCurrentUrlEquals(LoginPage::URL); 
+        
+        $directoryId = $documentHelper->getDocumentAreaId(5074, $this->documentAreaName);
+        $documentsPage->directoryDelete($this->documentAreaName, $directoryId);
     }
 
     public function tryToSetUpStructure(AcceptanceTester $I) : void
@@ -127,25 +119,32 @@ class DocumentsCest
         $I->waitForElementVisible(DocumentsPage::DRIVE_NAV_ASIDE, 60);
         $I->waitAndClick(['css' => 'a[href="/ui/default-structure-setup"]'], 60);
 
-        $I->waitAndClick('fds-selector-field[formcontrolname="country"]', 60);
-        $I->waitForElementVisible(Locator::contains('button.selector__item', ' Sweden '), 60);
-        $I->click(Locator::contains('button.selector__item', ' Sweden '));
-        
+        $I->waitAndClick('fds-selector-field[formcontrolname="country"]', 60);               
+        $I->waitForElementVisible([ 'xpath' => "//button[text()=' Sweden ']"], 60);
+        // $I->waitForElementVisible(Locator::contains('button.selector__item', ' Sweden '), 60);
+        $I->click([ 'xpath' => "//button[text()=' Sweden ']"]);         
+        // $I->click(Locator::contains('button.selector__item', ' Sweden '));
         $I->waitAndClick('fds-selector-field[formcontrolname="year"]', 60);
-        $I->waitAndClick(Locator::contains('button.selector__item', ' 2024 '), 60);
 
-        $I->waitAndClick('fds-selector-field[formcontrolname="language"]', 60);        
-        $I->waitAndClick(Locator::contains('button.selector__item', ' EN '), 60);
+        $I->waitAndClick([ 'xpath' => "//button[text()=' 2024 ']"], 60);        
+        // $I->waitAndClick(Locator::contains('button.selector__item', ' 2024 '), 60);
+        $I->waitAndClick('fds-selector-field[formcontrolname="language"]', 60);  
+        $I->waitAndClick([ 'xpath' => "//button[text()=' EN ']"], 60);              
+        // $I->waitAndClick(Locator::contains('button.selector__item', ' EN '), 60);
 
-        $I->waitAndClick('fds-selector-field[formcontrolname="documentAreas"]', 60);        
-        $I->waitAndClick(Locator::contains('label.custom-control-label', 'HR Reports'), 60);
-        $I->waitAndClick(Locator::contains('label.custom-control-label', 'Finance Reports'));
+        $I->waitAndClick('fds-selector-field[formcontrolname="documentAreas"]', 60);
+        $I->waitAndClick([ 'xpath' => "//label[text()=' HR Reports ']"], 60);        
+        // $I->waitAndClick(Locator::contains('label.custom-control-label', 'HR Reports'), 60);
+        $I->waitAndClick(['xpath' => "//label[text()=' Finance Reports ']"], 60);
+        // $I->waitAndClick(Locator::contains('label.custom-control-label', 'Finance Reports'), 60);
 
         $I->waitAndClick('fds-selector-field[formcontrolname="companies"]', 60); 
         $I->fillField(['css' => 'fds-selector-field[formcontrolname="companies"] input'], 'Test Company 09/2022');
-        $I->waitAndClick(Locator::contains('label', ' Test Company 09/2022 '), 60);
+        $I->waitAndClick(['xpath' => "//label[text()=' Test Company 09/2022 ']"], 60);        
+        // $I->waitAndClick(Locator::contains('label', ' Test Company 09/2022 '), 60);
 
-        $I->waitAndClick(Locator::contains('button', ' Create structure '), 60);
+        $I->waitAndClick(['xpath' => "//button[text()=' Create structure ']"], 60);
+        // $I->waitAndClick(Locator::contains('button', ' Create structure '), 60);
         $I->waitForElementVisible('div.alert-success', 60);
 
         $I->amOnUrl('https://documents-develop-devdb.staging.cozone.com/ui/recent');
@@ -177,7 +176,7 @@ class DocumentsCest
         $I->reloadPage();
 
         $documentsPage->grantAccessToDirectory($this->directoryParam['directoryName'], $this->secondUserAcc['user']); 
-        // // // multisession testing
+        // multisession testing
         $I->amOnUrl(DocumentsPage::URL);
         $I->waitAndClick(Locator::contains('a', $this->directoryParam['directoryName']), 12);
         $I->waitAndClick(Locator::contains('div.text-truncate a', $this->parametersFile['relativePath']), 12);
@@ -193,12 +192,10 @@ class DocumentsCest
             $I->amOnUrl(DocumentsPage::URL);
             $I->maximizeWindow();
             $I->resetCookie('OptanonAlertBoxClosed');
-            $I->wait(5);
-            $I->reloadPage();             
-            $I->setCookie('OptanonAlertBoxClosed', '2022-08-23T11:29:30.562Z');
-            $I->wait(10);
+            $I->wait(5);           
+            $I->reloadPage();              
+            $I->setCookie('OptanonAlertBoxClosed', '2022-08-23T11:29:30.562Z', $this->cookieDefaultParams);
             $I->reloadPage();           
-            $I->amOnUrl(DocumentsPage::URL);
             $loginPage->login($this->secondUserAcc);
 
             $I->waitAndClick(Locator::contains('a', $this->directoryParam['directoryName']));
@@ -208,12 +205,21 @@ class DocumentsCest
         });
 
         $I->reloadPage();
-        $I->waitAndClick(Locator::contains("div[row-id='{$newFile}'] fds-tag.tag--green > span", " Approved "));
+        $I->waitAndClick(Locator::contains("div[row-id='{$newFile}'] fds-tag.tag--green > span", " Approved "), 60);
         $I->waitForElementVisible(Locator::contains('div.popover a', $this->secondUserAcc['username']), 60);
         $I->seeElement(Locator::contains('div.popover a', $this->secondUserAcc['username']));
 
-        $secondUserF->leave();
+        $secondUserF->does(function (AcceptanceTester $I) use ($loginPage, $documentsPage, $newDirect, $newFile){
+            $I->amOnUrl(DocumentsPage::URL);
+            $I->maximizeWindow();
+            $I->waitForElementVisible("div[row-id='{$newFile}'] a[data-gtm-id='file-breadcrumbs-cell-directory']", 60);
+            $I->moveMouseOver(['css' => "div[row-id='{$newFile}'] a[data-gtm-id='file-breadcrumbs-cell-directory']"]);
+            // $tooltipLocationInfo = $I->grabTextFrom("div[row-id='{$newFile}'] div.tooltip-inner");
+            // var_dump($tooltipLocationInfo);
+            // $I->seeElement(Locator::contains("div[row-id={$newFile}] div.tooltip-inner", $tooltipLocationInfo));
+        });
 
+        $secondUserF->leave();
         $documentsPage->documentAreaDelete($newDirect);
     }
 

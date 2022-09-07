@@ -27,8 +27,9 @@ class DocumentsPage
     public const FILE_TO_CONSULT_BUTTON = ['css' => 'fds-tree-item a[href="/ui/file-drop"]'];
     public const FILE_UPLOAD_BUTTON = ['css' => 'doc-file-selector > fds-button'];
     public const MAIN_CARD = ['css' => 'doc-file-drop fds-card'];
-    public const FILE_ATTACHED = 'input[data-test-id="file-upload-selector"]';    
+    public const FILE_ATTACHED = 'input[data-test-id="file-upload-selector"]';    //
     public const FILE_UPLOAD_ALERT = ['css' => 'doc-uploader.shadow rounded fds-card-header']; 
+
     
     public const MAIN_CARD_HEADER = ['css' => '.ag-header.ag-focus-managed'];
     public const FIRST_ROW_CHECK = ['css' => 'fds-icon-button[icon="more"] > button:first-of-type'];      
@@ -41,6 +42,9 @@ class DocumentsPage
     public const NEW_DOCUMENT_AREA_BUTTON = ['css' => 'fds-button[data-test-id="sidebar-create-document-area"]'];  
     public const DOCUMENT_AREA_NAME_INPUT = ['css' => 'fds-text-field > input[placeholder="Document area name"]'];
     public const PRIMARY_BUTTON = ['css' => 'button.btn-primary'];
+
+    public const SIDEBAR_DOCUMENT_AREA_SELECTOR = ['css' => 'fds-tree-item[data-test-id="sidebar-current-company"] a'];
+    public const SHOW_MORE_ACTIONS_BUTTON = [];
 
     protected $acceptanceTester;
 
@@ -66,26 +70,29 @@ class DocumentsPage
         $I->waitForElementVisible(self::DRIVE_NAV_ASIDE, 120);
 
         $I->waitAndClick(Locator::contains('fds-tree-item a', 'Test Company 09/2022'),60);
-        $I->waitAndClick(Locator::contains('fds-tree-item a', $documentAreaName ),60);
-        $I->reloadPage();
-        $I->waitAndClick(['css' => 'fds-icon-button[data-gtm-id="directory-show-more-actions"] > button'], 60);  
-        $I->waitAndClick(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button'], 60);
-        $I->attachFile(['css' => 'input[data-test-id="file-upload-selector"]'], $file);
-        
+        $I->waitAndClick("doc-file-name-cell > div[title='{$documentAreaName}'] a",60);
+        // $I->reloadPage();
+        $I->wait(5);
+        // $I->waitForElementVisible('fds-dropzone', 60);
+        $I->waitAndClick(['css' => '#more-actions'], 60);  
+        // $I->waitAndClick(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button.dropdown-item'], 60);
+        $I->waitAndClick(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button']);
+        // $I->wait(2);
+        $I->attachFile('doc-file-selector > input[data-test-id="file-upload-selector"]', $file);
+
         $I->waitForElementVisible(['css' => 'fds-text-field > input'], 60);
         $I->fillField(['css' => 'fds-text-field > input'], 'Test Company 09/2022');
         $I->waitAndClick(Locator::contains('button', " Upload files  "), 60);
     }
 
-    public function fileDelete() : void
+    public function fileDelete($documentAreaName, $fileId) : void
     {
         $I = $this->acceptanceTester;
 
-        $I->amOnUrl(self::URL_FILE_DROP);
-        $I->waitForElementVisible(self::MAIN_CARD_HEADER, 120);  
-        $I->click(self::SORT_BY_ADDED);
-        $I->click(self::SORT_BY_ADDED);
-        $I->click(self::FIRST_ROW_MORE_BUTTON);     
+        $I->amOnUrl(self::URL);
+        $I->waitForElementVisible(self::DRIVE_NAV_ASIDE, 120);
+        $I->waitAndClick(Locator::contains('fds-tree-item[icon="document-area"] > a', $documentAreaName ), 60);
+        $I->waitAndClick("div[row-id='{$fileId}'] fds-icon-button[data-gtm-id='file-actions-show-more-actions'] button ");     
         $I->click(self::MORE_DELETE);
         $I->click(self::CONFIRM_DELETE);
         $I->waitForElementClickable(self::FIRST_ROW_CHECK, 120);
@@ -100,6 +107,21 @@ class DocumentsPage
         $I->waitAndClick(self::NEW_DOCUMENT_AREA_BUTTON);
         $I->waitAndFill(self::DOCUMENT_AREA_NAME_INPUT, "{$documentAreaName}");
         $I->waitAndClick(self::PRIMARY_BUTTON);
+    }
+// 
+    public function directoryDelete($documentAreaName, $directoryId) : void
+    {
+        $I = $this->acceptanceTester;
+
+        $I->amOnUrl(self::URL_FILE_DROP);
+        $I->waitForElementVisible(self::MAIN_CARD_HEADER, 120);  
+        $I->waitAndClick(['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] > a'], 60);
+        $I->waitForElementVisible(['css' => 'div.ag-pinned-right-cols-container'], 60);
+        $I->click(['css' => "div[row-id='{$directoryId}'] fds-icon-button[icon='more'] > button"]);   
+        $I->click(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-actions-delete-directory"] > button']);
+        $I->click(self::CONFIRM_DELETE);
+        $I->reloadPage();
+        $I->dontSeeElement(['css' => "div.ag-row-even[row-id='{$directoryId}']"]);
     }
 
     public function grantAccessToDirectory($documentAreaName, $user) : void

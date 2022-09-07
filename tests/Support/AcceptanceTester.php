@@ -19,6 +19,7 @@ namespace Tests\Support;
  *
  * @SuppressWarnings(PHPMD)
 */
+
 class AcceptanceTester extends \Codeception\Actor
 {
     use _generated\AcceptanceTesterActions;
@@ -26,13 +27,19 @@ class AcceptanceTester extends \Codeception\Actor
     /**
      * Define custom actions here
      */
+    public $cookieDefaultParams = [
+        'path' => '/',
+        'secure' => true,
+        'httpOnly' => false,
+        'domain' => 'idp-develop-devdb.staging.cozone.com'
+    ];
 
     public function setPageAndCookie($path)
-    {
+    {   
         $I = $this;
         $I->amOnPage($path);
         $I->maximizeWindow();
-        $I->setCookie('OptanonAlertBoxClosed', '2022-08-23T11:29:30.562Z');
+        $I->setCookie('OptanonAlertBoxClosed', '2022-08-23T11:29:30.562Z', $this->cookieDefaultParams);
         $I->reloadPage();
     } 
 
