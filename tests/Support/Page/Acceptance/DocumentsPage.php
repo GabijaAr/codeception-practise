@@ -20,22 +20,27 @@ class DocumentsPage
     /**
      * @var \Tests\Support\AcceptanceTester;
      */
+
     public const URL = 'https://documents-develop-devdb.staging.cozone.com/ui/recent'; //
     public const URL_FILE_DROP = 'https://documents-develop-devdb.staging.cozone.com/ui/file-drop'; //
 
-    public const DRIVE_NAV_ASIDE = ['css' => 'fds-layout-aside']; //SIDEBAR?
-    public const SIDEBAR_CURRENT_COMPANY = ['css' => 'fds-tree-item[data-test-id="sidebar-current-company"] a']; //
-    
+    public const NAV_SIDEBAR = ['css' => 'fds-layout-aside']; 
+    public const SIDEBAR_CURRENT_COMPANY = ['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] > a']; 
+
+    public const DIRECTORY_MORE_BUTTON = ['css' => '#more-actions'];    
+    public const FILE_ATTACH = ['css' => 'input[data-test-id="file-upload-selector"]'];  
+    public const FILE_UPLOAD_BUTTON = ['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button']; 
+    public const TEXT_FIELD_INPUT = ['css' => 'fds-text-field > input'];       
+    public const COMPANY_CONTENT_ACTIONS_ROW = ['css' => 'div.ag-pinned-right-cols-container'];
+    public const DIRECTORY_DELETE_BUTTON = ['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-actions-delete-directory"] > button'];
+
     public const FILE_TO_CONSULT_BUTTON = ['css' => 'fds-tree-item a[href="/ui/file-drop"]'];
-    public const FILE_UPLOAD_BUTTON = ['css' => 'doc-file-selector > fds-button'];
     public const MAIN_CARD = ['css' => 'doc-file-drop fds-card'];
-    public const FILE_ATTACHED = 'input[data-test-id="file-upload-selector"]';    //
     public const FILE_UPLOAD_ALERT = ['css' => 'doc-uploader.shadow rounded fds-card-header'];
 
-    
     public const NAV_SETUP_STRUCTURE = ['css' => 'a[href="/ui/default-structure-setup"]'];
-
-    // setup structure
+    public const USER_TAB = ['css' =>'#users-tab'];
+    
     public const STRUCTURE_FIELD_COUNTRY = ['css' => 'fds-selector-field[formcontrolname="country"]'];
     public const STRUCTURE_FIELD_YEAR = ['css' => 'fds-selector-field[formcontrolname="year"]'];
     public const STRUCTURE_FIELD_LANGUAGE = ['css' => 'fds-selector-field[formcontrolname="language"]'];
@@ -53,7 +58,6 @@ class DocumentsPage
     public const MAIN_CARD_HEADER = ['css' => '.ag-header.ag-focus-managed'];
     public const FIRST_ROW_CHECK = ['css' => 'fds-icon-button[icon="more"] > button:first-of-type'];      
     public const FIRST_ROW = ['css' => '.ag-pinned-right-cols-container > div[role="row"]:first-of-type']; 
-    public const FIRST_ROW_MORE_BUTTON = ['css' => '.ag-pinned-right-cols-container > div[row-id="2931198"] fds-icon-button[icon="more"] > button'];       
     public const MORE_DELETE = ['css' => 'fds-dropdown-menu-item[data-gtm-id="file-actions-delete"] > button'];  
     public const CONFIRM_DELETE = ['css' => 'button[data-gtm-id="confirm-confirmation-modal"]'];
     
@@ -63,7 +67,9 @@ class DocumentsPage
     public const PRIMARY_BUTTON = ['css' => 'button.btn-primary'];
 
     public const REQUEST_SELECT_APPROVERS = ['css' => 'fds-selector-menu-checkbox > label'];
-    
+    public const TOLLTIP_INNER_DETAILED = ['css' => 'body > div.tooltip.show div.tooltip-inner'];    
+    public const TOLLTIP_INNER = ['css' => 'div.tooltip-inner']; 
+
     public const ALERT_SUCCESS = ['css' => 'div.alert-success'];
 
 
@@ -88,24 +94,25 @@ class DocumentsPage
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL);
-        $I->waitForElementVisible(self::DRIVE_NAV_ASIDE, 120);
+        $I->waitForElementVisible(self::NAV_SIDEBAR, 120);
 
         $I->waitAndClick(Locator::contains('fds-tree-item a', 'Test Company 09/2022'),60);
         $I->waitAndClick("doc-file-name-cell > div[title='{$documentAreaName}'] a",60);
-        $I->waitAndClick(['css' => '#more-actions'], 60);  
-        $I->waitAndClick(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button'], 60);
-        $I->attachFile('input[data-test-id="file-upload-selector"]', $file);
-        $I->waitForElementVisible(['css' => 'fds-text-field > input'], 60);
-        $I->fillField(['css' => 'fds-text-field > input'], 'Test Company 09/2022');
+        $I->waitAndClick(self::DIRECTORY_MORE_BUTTON, 60);  
+        $I->waitAndClick(self::FILE_UPLOAD_BUTTON, 60);
+        $I->attachFile(self::FILE_ATTACH, $file);
+        $I->waitForElementVisible(self::TEXT_FIELD_INPUT, 60);
+        $I->fillField(self::TEXT_FIELD_INPUT, 'Test Company 09/2022');
         $I->waitAndClick(Locator::contains('button', " Upload files  "), 60);
+        $I->reloadPage();
     }
 
-    public function fileDelete($documentAreaName, $fileId) : void
+    public function fileDelete(string $documentAreaName, int $fileId) : void
     {
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL);
-        $I->waitForElementVisible(self::DRIVE_NAV_ASIDE, 120);
+        $I->waitForElementVisible(self::NAV_SIDEBAR, 120);
         $I->waitAndClick(Locator::contains('fds-tree-item[icon="document-area"] > a', $documentAreaName ), 60);
         $I->waitAndClick("div[row-id='{$fileId}'] fds-icon-button[data-gtm-id='file-actions-show-more-actions'] button ");     
         $I->click(self::MORE_DELETE);
@@ -113,39 +120,39 @@ class DocumentsPage
         $I->waitForElementClickable(self::FIRST_ROW_CHECK, 120);
     }
 
-    public function createDocumentArea($documentAreaName)
+    public function createDocumentArea(string $documentAreaName) : void
     {
         $I = $this->acceptanceTester;
                 
         $I->amOnUrl(self::URL);
-        $I->waitForElementVisible(self::DRIVE_NAV_ASIDE, 120);
+        $I->waitForElementVisible(self::NAV_SIDEBAR, 120);
         $I->waitAndClick(self::NEW_DOCUMENT_AREA_BUTTON);
         $I->waitAndFill(self::DOCUMENT_AREA_NAME_INPUT, "{$documentAreaName}");
         $I->waitAndClick(self::PRIMARY_BUTTON);
     }
 // 
-    public function directoryDelete($documentAreaName, $directoryId) : void
+    public function directoryDelete(string $documentAreaName, int $directoryId) : void
     {
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL_FILE_DROP);
         $I->waitForElementVisible(self::MAIN_CARD_HEADER, 120);  
-        $I->waitAndClick(['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] > a'], 60);
-        $I->waitForElementVisible(['css' => 'div.ag-pinned-right-cols-container'], 60);
+        $I->waitAndClick(self::SIDEBAR_CURRENT_COMPANY, 60);
+        $I->waitForElementVisible(self::COMPANY_CONTENT_ACTIONS_ROW, 60);
         $I->click(['css' => "div[row-id='{$directoryId}'] fds-icon-button[icon='more'] > button"]);   
-        $I->click(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-actions-delete-directory"] > button']);
+        $I->click(self::DIRECTORY_DELETE_BUTTON);
         $I->click(self::CONFIRM_DELETE);
         $I->reloadPage();
         $I->dontSeeElement(['css' => "div.ag-row-even[row-id='{$directoryId}']"]);
     }
 
-    public function grantAccessToDirectory($documentAreaName, $user) : void
+    public function grantAccessToDirectory(string $documentAreaName, array $user) : void
     {
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL); 
         $I->waitAndClick(Locator::contains('a', "{$documentAreaName}"), 60);
-        $I->waitAndClick(['css' =>'#users-tab'], 12);
+        $I->waitAndClick(self::USER_TAB, 12);
         $I->waitAndClick(Locator::contains('fds-button button.btn-text-flush', ' Add users '), 60);        
         $I->waitAndClick(Locator::contains('button', 'Select users'), 60);
         $I->waitForElementVisible(Locator::contains('label.custom-control-label', $user), 60);
@@ -153,21 +160,21 @@ class DocumentsPage
         $I->waitAndClick(Locator::contains('fds-button > button.btn-primary', ' Add users '), 60);
         $I->waitAndClick(Locator::contains('fds-selector > button', 'Viewer'), 60);
         $I->click(Locator::contains('fds-card-footer button', 'Save'));
-        $I->waitForElementNotVisible(['css' => '.alert-success'], 60);
+        $I->waitForElementNotVisible(self::ALERT_SUCCESS, 60);
     }
 
-    public function documentAreaDelete($directoryName) : void
+    public function deleteDirectoryApi(int $directoryId) : void
     {
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL_FILE_DROP);
         $I->waitForElementVisible(self::MAIN_CARD_HEADER, 120);  
-        $I->waitAndClick(['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] > a'], 60);
-        $I->waitForElementVisible(['css' => 'div.ag-pinned-right-cols-container'], 60);
-        $I->click(['css' => "div[row-id='{$directoryName}'] fds-icon-button[icon='more'] > button"]);   
+        $I->waitAndClick(self::SIDEBAR_CURRENT_COMPANY, 60);
+        $I->waitForElementVisible(self::COMPANY_CONTENT_ACTIONS_ROW, 60);
+        $I->click(['css' => "div[row-id='{$directoryId}'] fds-icon-button[icon='more'] > button"]);   
         $I->click(['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-actions-delete-directory"] > button']);
         $I->click(self::CONFIRM_DELETE);
         $I->reloadPage();
-        $I->dontSeeElement(['css' => "div.ag-row-even[row-id='{$directoryName}']"]);
+        $I->dontSeeElement(['css' => "div.ag-row-even[row-id='{$directoryId}']"]);
     }
 }

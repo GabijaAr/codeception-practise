@@ -106,7 +106,7 @@ class DocumentHelper extends \Codeception\Module
         return $location;
     }
 
-    public function uploadNewFile(array $parametersFile, string $file) : int 
+    public function uploadNewFile(array $fileParam, string $file) : int 
     {
         $I = $this->getModule(name: 'REST');
 
@@ -114,9 +114,9 @@ class DocumentHelper extends \Codeception\Module
         $I->deleteHeader('Content-Type');
 
 
-        $tmp = $this->createTmpFile($parametersFile['name'], file_get_contents(codecept_data_dir($file)));
+        $tmp = $this->createTmpFile($fileParam['name'], file_get_contents(codecept_data_dir($file)));
 
-        $I->sendPOST('https://documents-develop-devdb.staging.cozone.com/v1/api/files', $parametersFile, ['contents' => $tmp]);
+        $I->sendPOST('https://documents-develop-devdb.staging.cozone.com/v1/api/files', $fileParam, ['contents' => $tmp]);
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->seeResponseCodeIsSuccessful();
         return $I->grabDataFromResponseByJsonPath('id')[0];

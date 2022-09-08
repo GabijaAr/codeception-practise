@@ -41,7 +41,7 @@ class DocumentsCest
         'permission' => 'viewer'
     ];
 
-    public $parametersFile = [
+    public $fileParam = [
         'contentType' => "text/plain",
         'name' => 'File',
         'relativePath' => 'API',
@@ -75,12 +75,11 @@ class DocumentsCest
     {
         if($scenario->current('name') === 'tryToCreateDocumentArea')
         {
-            $I->waitAndClick(DocumentsPage::SIDEBAR_DOCUMENT_AREA_SELECTOR, 60);
+            $I->waitAndClick(DocumentsPage::SIDEBAR_CURRENT_COMPANY, 60);
         }
     }
 
     // tests
-    // #[Incomplete('after update attachAFile does not work')]
     public function tryToUploadFile(
         AcceptanceTester $I, 
         LoginPage $loginPage, 
@@ -90,7 +89,7 @@ class DocumentsCest
         ) : void
     {
         $documentsPage->createDocumentArea($this->documentAreaName);
-        $documentsPage->fileUpload($fileName, $this->documentAreaName);
+        $documentsPage->fileUpload($this->file, $this->documentAreaName);
         $directoryId = $documentHelper->getDocumentAreaId($this->company, $this->documentAreaName);
         $fileId = $documentHelper->getFileId( $directoryId, $this->file, $passwordHelper);
         $documentsPage->fileDelete($this->documentAreaName, $fileId);
@@ -110,6 +109,8 @@ class DocumentsCest
 
         $directoryId = $documentHelper->getDocumentAreaId($this->company, $this->documentAreaName);
         $documentsPage->directoryDelete($this->documentAreaName, $directoryId);
+
+        
     }
 
     
@@ -169,16 +170,16 @@ class DocumentsCest
     {       
 
         $newDirect = $documentHelper->createNewDirectory($this->directoryParam, $passwordHelper);
-        $this->parametersFile['parentDirectoryId'] = $newDirect;
+        $this->fileParam['parentDirectoryId'] = $newDirect;
 
-        $newFile = $documentHelper->uploadNewFile($this->parametersFile, $this->file);
+        $newFile = $documentHelper->uploadNewFile($this->fileParam, $this->file);
         $I->reloadPage();
 
         $documentsPage->grantAccessToDirectory($this->directoryParam['directoryName'], $this->secondUserAcc['user']); 
 
         $I->amOnUrl(DocumentsPage::URL);
         $I->waitAndClick(Locator::contains('a', $this->directoryParam['directoryName']), 12);
-        $I->waitAndClick(Locator::contains('div.text-truncate a', $this->parametersFile['relativePath']), 12);
+        $I->waitAndClick(Locator::contains('div.text-truncate a', $this->fileParam['relativePath']), 12);
 
         $I->waitAndclick(['css' => "div[row-id='{$newFile}'] fds-icon-button[icon='send'] button "]);
         $I->waitAndClick(Locator::contains('button', 'Select approvers'));
@@ -198,7 +199,7 @@ class DocumentsCest
             $loginPage->login($this->secondUserAcc);
 
             $I->waitAndClick(Locator::contains('a', $this->directoryParam['directoryName']));
-            $I->waitAndClick(Locator::contains('div.text-truncate a', $this->parametersFile['relativePath']), 60);
+            $I->waitAndClick(Locator::contains('div.text-truncate a', $this->fileParam['relativePath']), 60);
             $I->waitAndclick(['css' => "div[row-id='{$newFile}'] fds-icon-button[icon='approved-action'] button "], 60);
             $I->waitAndClick(Locator::contains('button', ' Approve '));
         });
@@ -214,12 +215,12 @@ class DocumentsCest
             $I->waitForElementVisible(['css' => "div[row-id='{$newFile}'] a[data-gtm-id='file-breadcrumbs-cell-directory']"], 60);
             $I->moveMouseOver(['css' => "div[row-id='{$newFile}'] a[data-gtm-id='file-breadcrumbs-cell-directory']"]);
             $I->wait(10);
-            $tooltipLocationInfo = $I->grabTextFrom(['css' => 'body > div.tooltip.show div.tooltip-inner']);
-            $I->see($tooltipLocationInfo, ['css' => 'div.tooltip-inner']);
+            $tooltipLocationInfo = $I->grabTextFrom(self::TOLLTIP_INNER_DETAILED);
+            $I->see($tooltipLocationInfo, self::TOLLTIP_INNER);
         });
 
         $secondUserF->leave();
-        $documentsPage->documentAreaDelete($newDirect);
+        $documentsPage->deleteDirectoryApi($newDirect);
     }
 
 
