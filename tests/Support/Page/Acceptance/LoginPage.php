@@ -38,7 +38,7 @@ class LoginPage
         $this->acceptanceTester = $I;
     }
 
-    public function login(array $user)
+    public function login(array $user) : void
     {
         $I = $this->acceptanceTester;
 
@@ -47,7 +47,7 @@ class LoginPage
         $I->waitAndClick(self::LOGIN_BUTTON);
     }
 
-    public function logout($portalPage)
+    public function logout($portalPage) 
     {
         $I = $this->acceptanceTester;
 

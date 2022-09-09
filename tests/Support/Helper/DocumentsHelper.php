@@ -11,7 +11,7 @@ use Codeception\Attribute\Incomplete;
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
-class DocumentHelper extends \Codeception\Module
+class DocumentsHelper extends \Codeception\Module
 {
 
 
@@ -65,10 +65,12 @@ class DocumentHelper extends \Codeception\Module
         $I->haveHttpHeader('accept', 'application/json');        
         $I->haveHttpHeader('content-type', 'application/json');    
         
+        
         $I->sendPOST(
             'https://documents-develop-devdb.staging.cozone.com/v1/api/directories',[
                 'parentDirectoryId' => $directoryParam['parentDirectoryId'],
                 'name' => $directoryParam['directoryName'],
+                // array parameter
                 'accessRules' => 
                     [
                     0 => 

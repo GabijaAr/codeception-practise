@@ -19,6 +19,6 @@ modules:
             url: https://idp-develop-devdb.staging.cozone.com/
             part: Json
         - Tests\Support\Helper\PasswordHelper
-        - Tests\Support\Helper\DocumentHelper
+        - Tests\Support\Helper\DocumentsHelper
         - Asserts
 
