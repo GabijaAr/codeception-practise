@@ -27,7 +27,8 @@ class DocumentsPage
     public const NAV_SIDEBAR = ['css' => 'fds-layout-aside']; 
     public const SIDEBAR_CURRENT_COMPANY = ['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] > a']; 
     public const DIRECTORY_MORE_BUTTON = ['css' => '#more-actions'];    
-    public const FILE_ATTACH = ['css' => 'input[data-test-id="file-upload-selector"]'];  
+    public const FILE_ATTACH = ['css' => 'input[data-test-id="file-upload-selector"]']; 
+    public const BUTTON_UPLOAD_FILE = ['xpath' => "//button[text()[contains(., 'Upload file' )]]"];  
     public const FILE_UPLOAD_BUTTON = ['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button']; 
     public const TEXT_FIELD_INPUT = ['css' => 'fds-text-field > input'];       
     public const COMPANY_CONTENT_ACTIONS_ROW = ['css' => 'div.ag-pinned-right-cols-container'];
@@ -65,16 +66,20 @@ class DocumentsPage
     public const SORT_BY_ADDED = ['css' => 'div[col-id="createdAt"]'];
     public const NEW_DOCUMENT_AREA_BUTTON = ['css' => 'fds-button[data-test-id="sidebar-create-document-area"]'];  
     public const DOCUMENT_AREA_NAME_INPUT = ['css' => 'fds-text-field > input[placeholder="Document area name"]'];
-    public const PRIMARY_BUTTON = ['css' => 'button.btn-primary'];
+    public const BUTTON_SAVE_NEW_DOC = ['xpath' => "//button[text()[contains(.,'Save')]]"];
     public const BUTTON_SELECT_APPROVERS = ['xpath' => "//button[text()[contains(.,'Select approvers')]]"];
     public const BUTTON_REQUEST_APPROVAL = ['xpath' => "//button[text()[contains(.,'Request for approval')]]"];
     public const BUTTON_APPROVE = ['xpath' => "//button[text()[contains(.,'Approve')]]"];
+    public const RECENT_FROM_CONSULTANT = ['xpath' => "//button[text()[contains(., 'From consultant' )]]"];
+    public const RECENT_TO_CONSULTANT = ['xpath' => "//button[text()[contains(., 'To consultant' )]]"];   
+    
     public const REQUEST_SELECT_APPROVERS = ['css' => 'fds-selector-menu-checkbox > label'];
+    public const BREADCRUMBS_PATH = ['css' => "a[data-gtm-id='file-breadcrumbs-cell-directory']:first-of-type"];   
     public const TOOLTIP_INNER_DETAILED = ['css' => 'body > div .tooltip-inner'];    
     public const TOOLTIP_INNER = ['css' => '.tooltip-inner']; 
 
     public const ALERT_SUCCESS = ['css' => '.alert-success'];
-
+    
 
     protected $acceptanceTester;
 
@@ -91,6 +96,7 @@ class DocumentsPage
         $I->waitForElementVisible(PortalPage::PORTAL_NEWS_SECT, 120);
         $I->amOnUrl(self::URL);
     }
+    
 
     public function fileUpload(array $sharedData, string $companyName) : void
     {
@@ -98,8 +104,8 @@ class DocumentsPage
 
         $I->amOnUrl(self::URL);
         $I->waitForElementVisible(self::NAV_SIDEBAR, 120);
-        $I->waitAndClick(['xpath' => "//a[text()[contains(., '{$companyName}' )]]"],60);        
-        $I->waitAndClick(['css' => "[title='{$sharedData['documentAreaName']}'] a"],60);
+        $I->waitAndClick(['xpath' => "//a//span[text()[contains(., '{$companyName}' )]]"], 60);        
+        $I->waitAndClick(['css' => "[title='{$sharedData['documentAreaName']}'] a"], 60);
         $I->waitAndClick(self::DIRECTORY_MORE_BUTTON, 60);  
         $I->waitAndClick(self::FILE_UPLOAD_BUTTON, 60);
         $I->attachFile(self::FILE_ATTACH, "{$sharedData['file']}");
@@ -130,9 +136,10 @@ class DocumentsPage
         $I->waitForElementVisible(self::NAV_SIDEBAR, 120);
         $I->waitAndClick(self::NEW_DOCUMENT_AREA_BUTTON);
         $I->waitAndFill(self::DOCUMENT_AREA_NAME_INPUT, "{$documentAreaName}");
-        $I->waitAndClick(self::PRIMARY_BUTTON);
+        $I->waitAndClick(self::BUTTON_SAVE_NEW_DOC, 60);
+        $I->waitForElementVisible(['xpath' => "//doc-current-directory-header/fds-card-title[text()[contains(.,'Doc Area')]]"], 60);
     }
-// 
+
     public function directoryDelete(string $documentAreaName, int $directoryId) : void
     {
         $I = $this->acceptanceTester;
@@ -152,29 +159,31 @@ class DocumentsPage
     public function grantAccessToDirectory(
         string $documentAreaName, 
         array $user, 
+        string $companyName,
         string $permission) : void
     {
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL); 
-       
-        $I->waitAndClick(['xpath' => "//span[text()[contains(., '{$documentAreaName}')]]"], 60);
+
+        $I->waitAndClick(['xpath' => "//a//span[text()[contains(., '{$companyName}')]]"], 60);        
+        $I->waitAndClick(['xpath' => "//a//span[text()[contains(., '{$documentAreaName}')]]"], 60);
         $I->waitAndClick(self::USER_TAB, 60);
         $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Add users')]]"], 60);               
 
         $I->waitAndClick(['css' => '[formcontrolname="company"]'], 60);  
         $I->waitForElementVisible(['xpath' => "//fds-selector-menu-item/button"], 60);
         $I->fillField(['css' => '[placeholder="Type to search"]'], "{$user['company']}");
-        $I->waitAndClick(['xpath' => "//fds-selector-menu-item[2]/button[text()[contains(., '{$user['company']}')]]"], 60);  
+        $I->waitAndClick(['xpath' => "//fds-selector-menu-item[1]/button[text()[contains(., '{$user['company']}')]]"], 60);  
 
         $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Select users')]]"], 60);
         $I->waitForElementVisible(['css' => 'fds-selector-menu-checkbox:first-of-type'], 60);
         $I->fillField(['css' => '[placeholder="Type to search"]'], "{$user['user']}");
         $I->waitForElementVisible([ 'xpath' => "//label[text()[contains(., '{$user['user']}')]]"], 60);        
-        $I->selectOption([ 'css' => 'input'], ['xpath' => "//input/following-sibling::label[text()[contains(., '{$user['user']}')]]"]);
+        $I->selectOption([ 'css' => 'input'], ['xpath' => "//label[text()[contains(., '{$user['user']}')]]"]);
 
-        $I->executeJS('window.scrollTo(1000, 400);');
-        $I->waitAndClick([ 'xpath' => "//button[text()[contains(., 'Add users')]]"], 60);       
+        $I->scrollTo([ 'xpath' => "//doc-share-permissions//button[text()[contains(., 'Add users')]]"],0, 100);
+        $I->waitAndClick([ 'xpath' => "//doc-share-permissions//button[text()[contains(., 'Add users')]]"], 60);       
 
         $I->waitAndClick([ 'xpath' => "//button[text()[contains(., '{$permission}')]]"], 60);        
 

@@ -44,7 +44,7 @@ class DocumentsHelper extends \Codeception\Module
         $I->haveHttpHeader('content-type', 'application/json');
 
         $I->sendGET(
-            "https://documents-develop-devdb.staging.cozone.com/v1/api/directories/$directoryId"
+            "https://documents-develop-devdb.staging.cozone.com/v1/api/directories/{$directoryId}"
         );
         $I->seeResponseCodeIsSuccessful();
         $documentArea = $I->grabDataFromResponseByJsonPath("__children")[0];

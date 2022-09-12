@@ -43,6 +43,21 @@ class AcceptanceTester extends \Codeception\Actor
         $I->reloadPage();
     } 
 
+    public function setPageAndCookieForFriend($path, $user, $loginPage )
+    {   
+        $I = $this;
+        $I->amOnUrl($path);
+        $I->maximizeWindow();
+        $I->resetCookie('OptanonAlertBoxClosed');
+        $I->waitForElementVisible('uil-login-user', 60);    
+        $I->reloadPage();              
+        $I->setCookie('OptanonAlertBoxClosed', '2022-08-23T11:29:30.562Z', $this->cookieDefaultParams);
+        $I->reloadPage();           
+        $loginPage->login($user);
+
+    }
+
+
     public function waitAndSee($selector, $text)
     {
         $I = $this;
