@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Support;
 
+use Tests\Support\Page\Acceptance\PortalPage;
 /**
  * Inherited Methods
  * @method void wantToTest($text)
@@ -57,6 +58,13 @@ class AcceptanceTester extends \Codeception\Actor
 
     }
 
+        public function redirectToPage(array $user, string $url, $loginPage) : void
+    {
+        $I = $this;
+        $loginPage->login($user);
+        $I->waitForElementVisible(PortalPage::PORTAL_NEWS_SECT, 60);
+        $I->amOnUrl($url);
+    }
 
     public function waitAndSee($selector, $text)
     {

@@ -16,55 +16,57 @@ use Tests\Support\Helper\DocumentsHelper;
 
 class DocumentsCest
 {
-    public $sharedData = [
+    private $sharedData = [
         'documentAreaName' => 'Doc Area',
         'file' => 'd913d35c-915c-41db-a126-613d04694752.txt'        
     ];
 
-    public $accessPermissions = [
+    private $accessPermissions = [
         'permissionViewer' => 'Viewer',
         'permissionEditor' => 'Editor',
         'permissionManager' => 'Manager',        
         'permissionOwner' => 'Owner',
     ];
 
-    public $companyInfo = [
+    private $companyInfo = [
         'companyId' => 5074,
         'companyName' => 'Test Company 09/2022'
     ];
 
-    public $mainUserAcc = [
+    private $mainUserAcc = [
         'username' => 'Acc2@testermail.com',
         'password' => 'PASS*w01rd'
     ];
 
-    public $consultantUserAcc = [
+    private $consultantUserAcc = [
         'company' => 'Acme AB',
         'user' => 'Acc4 Consultant',
         'username' => 'Acc4consultant@tester.com',
         'password' => 'PASS*w01rd4'
     ];
 
-    public $directoryParam = [
+    private $directoryParam = [
         'parentDirectoryId' => 2930954,
         'directoryName' => 'Directory',
         'userId' => '35703',
         'permission' => 'viewer'
     ];
 
-    public $fileParam = [
+    private $fileParam = [
         'contentType' => "text/plain",
         'name' => 'File',
         'relativePath' => 'API',
         'parentDirectoryId' => 0,  
     ];
    
-    public $cookieDefaultParams = [
+    private $cookieDefaultParams = [
         'path' => '/',
         'secure' => true,
         'httpOnly' => false,
         'domain' => 'idp-develop-devdb.staging.cozone.com'
     ];
+
+    public $newDirect = 0;
 
     public function _before(
         AcceptanceTester $I,
@@ -74,20 +76,26 @@ class DocumentsCest
         \Codeception\Scenario $scenario) : void
     {
         $I->setPageAndCookie(LoginPage::URL);        
-        $documentsPage->redirectToDocumentsPage($this->mainUserAcc, $loginPage);
         $I->loginApi($this->mainUserAcc);
-        $I->setCookie('automation_testing', 'selenium');       
+        $I->redirectToPage($this->mainUserAcc, DocumentsPage::URL, $loginPage);
+        $I->setCookie('automation_testing', 'selenium');      
     }
 
     public function _after( 
         AcceptanceTester $I,
         DocumentsHelper $documentsHelper,
+        DocumentsPage $documentsPage,
         \Codeception\Scenario $scenario) : void
     {
-        //         if($scenario->current('name') === 'tryToFileUploadApi')
-        // {
-        //     $documentsPage->deleteDirectoryApi($newDirect);
-        // }
+        if($scenario->current('name') === 'tryToCreateDocumentArea')
+            {
+                $directoryId = $documentsHelper->getDocumentAreaId($this->companyInfo['companyId'], $this->sharedData['documentAreaName']);
+                $documentsPage->directoryDelete($this->sharedData['documentAreaName'], $directoryId);
+            }
+        if($scenario->current('name') === 'tryToFileUploadApi')
+            {
+                $documentsPage->deleteDirectoryApi($this->newDirect);
+            }
     }
 
     // tests
@@ -101,7 +109,7 @@ class DocumentsCest
     {
         $documentsPage->createDocumentArea($this->sharedData['documentAreaName']);
         $documentsPage->fileUpload($this->sharedData, $this->companyInfo['companyName']);
-        $directoryId = $documentsHelper->getDocumentAreaId($this->companyInfo['companyName'], $this->sharedData['documentAreaName']);
+        $directoryId = $documentsHelper->getDocumentAreaId($this->companyInfo['companyId'], $this->sharedData['documentAreaName']);
         $fileId = $documentsHelper->getFileId( $directoryId, $this->sharedData['file'], $passwordHelper);
         $documentsPage->fileDelete($this->sharedData['documentAreaName'], $fileId);
         $documentsPage->directoryDelete($this->sharedData['documentAreaName'], $directoryId);
@@ -117,31 +125,27 @@ class DocumentsCest
     {
         $documentsPage->createDocumentArea($this->sharedData['documentAreaName']);    
         $documentsPage->fileUpload($this->sharedData, $this->companyInfo['companyName']);
-        // viewer
         $documentsPage->grantAccessToDirectory($this->sharedData['documentAreaName'], $this->consultantUserAcc, $this->companyInfo['companyName'], $this->accessPermissions['permissionViewer']);
        
         $consultantUser = $I->haveFriend('consultantUser');
         $consultantUser->does(function (AcceptanceTester $I) use ($loginPage, $documentsPage, $documentsHelper){
             $I->setPageAndCookieForFriend(DocumentsPage::URL, $this->consultantUserAcc, $loginPage);
-            $I->waitAndClick(['css' => "a.tree-node.tree-node--level-1[href='/ui/directory/{$this->directoryParam['parentDirectoryId']}']"], 60);
-            $I->waitAndClick(['xpath' => "//a[text()[contains(.,'{$this->sharedData['documentAreaName']}')]]"], 60);
-            
-            $I->amGoingTo('check access permissions as viewer');            
-            $I->waitAndClick(['xpath' => "//button/fds-icon[@class='freshicon freshicon-download']"],60);
+            $I->waitAndClick($documentsPage->getDirectoryShareWMe($this->directoryParam['parentDirectoryId']), 60);
+            $I->waitAndClick($documentsPage->getLinkDocumentName($this->sharedData['documentAreaName']), 60);
+
+            $I->amGoingTo('check access permissions as viewer');  
+            $I->waitAndClick(DocumentsPage::BUTTON_FILE_DOWNLOAD, 60);
             $I->dontSeeElement(DocumentsPage::DIRECTORY_MORE_BUTTON);
-            $I->dontSeeElement('fds-icon.freshicon-send');
-            $I->waitAndClick("fds-icon-button[data-gtm-id='file-actions-show-more-actions'] button", 60);
-            $I->dontSeeElement(['xpath' => "//button[text()[contains(., 'Move file to...' )]]"]);
-            $I->dontSeeElement(['xpath' => "//button[text()[contains(., 'Rename' )]]"]);
-            $I->dontSeeElement(['xpath' => "//button[text()[contains(., 'Delete' )]]"]);
-            $I->dontSeeElement(['xpath' => "//button[text()[contains(., 'View activity log' )]]"]);
-            $I->dontSeeElement(['xpath' => "//button[text()[contains(., 'Set duration time' )]]"]); 
+            $I->dontSeeElement(DocumentsPage::BUTTON_FILE_SEND_REQUEST);
+            $I->waitAndClick(DocumentsPage::FILE_FRIEND_MORE_ACTIONS, 60);
+            $I->dontSeeElement($documentsPage->getButtonContains('Move file to...'));
+            $I->dontSeeElement($documentsPage->getButtonContains('Rename'));            
+            $I->dontSeeElement($documentsPage->getButtonContains('Delete'));            
+            $I->dontSeeElement($documentsPage->getButtonContains('View activity log'));            
+            $I->dontSeeElement($documentsPage->getButtonContains('Set duration time'));             
         });
 
         $consultantUser->leave();
-
-        $directoryId = $documentsHelper->getDocumentAreaId($this->companyInfo['companyId'], $this->sharedData['documentAreaName']);
-        $documentsPage->directoryDelete($this->sharedData['documentAreaName'], $directoryId);
     }
 
     
@@ -164,34 +168,34 @@ class DocumentsCest
         $I->selectOption(DocumentsPage::STRUCTURE_DOC_AREAS_FINANCE);
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_COMPANIES, 60); 
         $I->fillField(DocumentsPage::STRUCTURE_COMPANIES_INPUT, $this->companyName);
-        $I->waitAndClick(['xpath' => "//label[text()='$this->companyInfo['companyName']']"], 60);        
+        $I->waitAndClick($documentsPage->getLabelContains($this->companyInfo['companyName']), 60);           
+            
         $I->waitAndClick(DocumentsPage::STRUCTURE_CREATE, 60);
         $I->waitForElementVisible(DocumentsPage::ALERT_SUCCESS, 60);
 
         $I->amGoingTo('check generated folders structure');
         $I->amOnUrl(DocumentsPage::URL);
-        $I->waitAndClick(['xpath' => "//a[text()[contains(., '{$this->companyInfo['companyName']}')]]"] ,60);
+        $I->waitAndClick($documentsPage->getLinkContains($this->companyInfo['companyName']), 60);
+        
         $I->waitAndClick(DocumentsPage::DIRECTORY_FINANCE_REPORTS, 60);
         $I->seeElement(DocumentsPage::DIRECTORY_FROM_AZETS);
         $I->seeElement(DocumentsPage::DIRECTORY_TO_AZETS);
         $I->amOnUrl(DocumentsPage::URL);
-        $I->waitAndClick(['xpath' => "//a[text()[contains(.,'{$this->companyInfo['companyName']}')]]"], 60);        
+        $I->waitAndClick($documentsPage->getLinkContains($this->companyInfo['companyName']), 60);        
         $I->waitAndClick(DocumentsPage::DIRECTORY_HR_REPORTS, 60);
         $I->seeElement(DocumentsPage::DIRECTORY_FROM_AZETS);
         $I->seeElement(DocumentsPage::DIRECTORY_TO_AZETS);
     }
 
-
-
-    public function tryToFileUploadApi(AcceptanceTester $I,
+    public function tryToUploadFileThroughApi(AcceptanceTester $I,
         DocumentsHelper $documentsHelper,
         PasswordHelper $passwordHelper, 
         DocumentsPage $documentsPage,
         LoginPage $loginPage) : void
     {       
         $I->amGoingTo('create directory with file through api'); 
-        $newDirect = $documentsHelper->createNewDirectory($this->directoryParam, $passwordHelper);
-        $this->fileParam['parentDirectoryId'] = $newDirect;
+        $this->newDirect = $documentsHelper->createNewDirectory($this->directoryParam, $passwordHelper);
+        $this->fileParam['parentDirectoryId'] = $this->newDirect;
         $newFile = $documentsHelper->uploadNewFile($this->fileParam, $this->sharedData['file']);
         $I->reloadPage();
 
@@ -199,13 +203,13 @@ class DocumentsCest
 
         $I->amGoingTo('request file approval from consultant account');        
         $I->amOnUrl(DocumentsPage::URL);
-        $I->waitAndClick(['xpath' => "//a//span[text()[contains(.,'{$this->companyInfo['companyName']}')]]"], 60); 
-        $I->waitAndClick(['xpath' => "//a//span[text()[contains(.,'{$this->directoryParam['directoryName']}')]]"], 60);
-        $I->waitAndClick(['xpath' => "//doc-directory-tree//a//span[text()[contains(.,'{$this->fileParam['relativePath']}')]]"], 60);
-        $I->waitAndclick(['css' => "div[row-id='{$newFile}'] fds-icon-button[icon='send'] button"]);
+        $I->waitAndClick($documentsPage->getSpanContains($this->companyInfo['companyName']), 60);         
+        $I->waitAndClick($documentsPage->getSpanContains($this->directoryParam['directoryName']), 60);       
+        $I->waitAndClick($documentsPage->getRelativePath($this->fileParam['relativePath']), 60);
+        $I->waitAndclick($documentsPage->getButtonSend($newFile));
         $I->waitAndClick(DocumentsPage::BUTTON_SELECT_APPROVERS);        
         $I->waitForElementVisible(DocumentsPage::REQUEST_SELECT_APPROVERS, 60);
-        $I->checkOption(['xpath' => "//fds-selector-menu-checkbox/label[text()[contains(.,'{$this->consultantUserAcc['user']}')]]"]);       
+        $I->checkOption($documentsPage->getCheckboxUser($this->consultantUserAcc['user']));
         $I->waitAndClick(DocumentsPage::BUTTON_REQUEST_APPROVAL);
 
         $consultantUserF = $I->haveFriend('consultantUser');
@@ -213,16 +217,19 @@ class DocumentsCest
             $I->setPageAndCookieForFriend(DocumentsPage::URL, $this->consultantUserAcc, $loginPage);
 
             $I->amGoingTo('approve file request from company account'); 
-            $I->waitForElementVisible('.scrollable doc-sidebar', 60);
-            $I->waitAndClick(['css' => "a.tree-node.tree-node--level-1[href='/ui/directory/{$this->directoryParam['parentDirectoryId']}']"], 60);
-            $I->waitAndClick(['xpath' => "//a[text()[contains(.,'{$this->directoryParam['directoryName']}')]]"], 60);
-            $I->waitAndClick(['xpath' => "//a[text()[contains(.,'{$this->fileParam['relativePath']}')]]"], 60);
-            $I->waitAndclick(['css' => "div[row-id='{$newFile}'] fds-icon-button[icon='approved-action'] button "], 60);
+            $I->waitForElementVisible(DocumentsPage::DOC_SIDEBAR, 60);
+
+            $I->waitAndClick($documentsPage->getDirectoryShareWMe($this->directoryParam['parentDirectoryId']), 60);
+            
+            $I->waitAndClick($documentsPage->getLinkContains($this->directoryParam['directoryName']), 60);
+            $I->waitAndClick($documentsPage->getLinkContains($this->fileParam['relativePath']), 60);
+            
+            $I->waitAndclick($documentsPage->getButtonWFunction($newFile, 'approved-action'), 60);
             $I->waitAndClick(DocumentsPage::BUTTON_APPROVE);
         });
 
         $I->reloadPage();
-        $I->waitAndClick(Locator::contains("div[row-id='{$newFile}'] fds-tag.tag--green > span", " Approved "), 60);
+        $I->waitAndClick(['xpath' => "//div[@row-id='{$newFile}']//fds-tag[@class='tag tag--clickable tag--green']/span[text()[contains(.,'Approved')]]"], 60);        // $I->waitForElementVisible(['xpath' => "//div.popover//a[text()[contains(.,'{$this->consultantUserAcc['username']}')]]"], 60);
         $I->waitForElementVisible(Locator::contains('div.popover a', $this->consultantUserAcc['username']), 60);
         $I->seeElement(Locator::contains('div.popover a', $this->consultantUserAcc['username']));
 
@@ -250,7 +257,6 @@ class DocumentsCest
         });
 
         $consultantUserF->leave();
-        $documentsPage->deleteDirectoryApi($newDirect);
     }
 
 

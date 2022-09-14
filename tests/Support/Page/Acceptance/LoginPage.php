@@ -15,6 +15,17 @@ class LoginPage
      * @var \Tests\Support\AcceptanceTester;
      */
 
+    public $mainUserAcc = [
+        'username' => 'Acc2@testermail.com',
+        'password' => 'PASS*w01rd'
+    ];
+
+    public $consultantUserAcc = [
+        'company' => 'Acme AB',
+        'user' => 'Acc4 Consultant',
+        'username' => 'Acc4consultant@tester.com',
+        'password' => 'PASS*w01rd4'
+    ];
 
     public const URL = '/user/login';
 
