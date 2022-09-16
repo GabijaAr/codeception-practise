@@ -91,24 +91,24 @@ class DocumentsPage
     public const TOOLTIP_INNER = ['css' => '.tooltip-inner']; 
     public const ALERT_SUCCESS = ['css' => '.alert-success'];
 
-    function getButtonContains($text) : array {return ['xpath' => "//button[text()[contains(.,'{$text}')]]"];}
-    function getLabelContains($text) : array {return ['xpath' => "//label[text()[contains(.,'{$text}')]]"];}
-    function getLinkContains($text) : array {return ['xpath' => "//a[text()[contains(.,'{$text}')]]"];}  
-    function getSpanContains($text) : array {return ['xpath' => "//a//span[text()[contains(., '{$text}')]]"];}  
+    public function getButtonContains($text) : array {return ['xpath' => "//button[text()[contains(.,'{$text}')]]"];}
+    public function getLabelContains($text) : array {return ['xpath' => "//label[text()[contains(.,'{$text}')]]"];}
+    public function getLinkContains($text) : array {return ['xpath' => "//a[text()[contains(.,'{$text}')]]"];}  
+    public function getSpanContains($text) : array {return ['xpath' => "//a//span[text()[contains(., '{$text}')]]"];}  
 
-    function getDirectoryShareWMe($parentDirectoryId) : array {return ['css' => "a.tree-node.tree-node--level-1[href='/ui/directory/{$parentDirectoryId}']"];}
-    function getLinkDocumentName($docName) : array {return ['xpath' => "//a[text()[contains(.,'{$docName}')]]"];}
-    function getDocumentNameTitle($docName) : array {return ['css' => "[title='{$docName}'] a"];}    
-    function getButtonActionsWId($fileId) : array {return [ 'css' => "div[row-id='{$fileId}'] fds-icon-button[data-gtm-id='file-actions-show-more-actions'] button "];}  
-    function getDocumentIdButtonMore($directoryId) : array {return ['css' => "div[row-id='{$directoryId}'] fds-icon-button[icon='more'] > button"];}    
-    function getCardDirectoryName($directoryName) : array {return ['xpath' => "//doc-current-directory-header/fds-card-title[text()[contains(.,'{$directoryName}')]]"];}       
-    function getCardDirectoryRow($directoryId) : array {return ['css' => "div.ag-row-even[row-id='{$directoryId}']"];}      
-    function getSelectCompanyButton($userCompany) : array {return ['xpath' => "//fds-selector-menu-item[1]/button[text()[contains(., '{$userCompany}')]]"];}      
-    function getRelativePath($relativePath) : array {return ['xpath' => "//doc-directory-tree//a//span[text()[contains(.,'{$relativePath}')]]"];}      
+    public function getDirectoryShareWMe($parentDirectoryId) : array {return ['css' => "a.tree-node.tree-node--level-1[href='/ui/directory/{$parentDirectoryId}']"];}
+    public function getLinkDocumentName($docName) : array {return ['xpath' => "//a[text()[contains(.,'{$docName}')]]"];}
+    public function getDocumentNameTitle($docName) : array {return ['css' => "[title='{$docName}'] a"];}    
+    public function getButtonActionsWId($fileId) : array {return [ 'css' => "div[row-id='{$fileId}'] fds-icon-button[data-gtm-id='file-actions-show-more-actions'] button "];}  
+    public function getDocumentIdButtonMore($directoryId) : array {return ['css' => "div[row-id='{$directoryId}'] fds-icon-button[icon='more'] > button"];}    
+    public function getCardDirectoryName($directoryName) : array {return ['xpath' => "//doc-current-directory-header/fds-card-title[text()[contains(.,'{$directoryName}')]]"];}       
+    public function getCardDirectoryRow($directoryId) : array {return ['css' => "div.ag-row-even[row-id='{$directoryId}']"];}      
+    public function getSelectCompanyButton($userCompany) : array {return ['xpath' => "//fds-selector-menu-item[1]/button[text()[contains(., '{$userCompany}')]]"];}      
+    public function getRelativePath($relativePath) : array {return ['xpath' => "//doc-directory-tree//a//span[text()[contains(.,'{$relativePath}')]]"];}      
     
-    function getCheckboxUser($user) : array {return ['xpath' => "//fds-selector-menu-checkbox/label[text()[contains(.,'{$user}')]]"];}      
-    function getButtonSend($fileId) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='send'] button"];}
-    function getButtonWFunction($fileId, $funct) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='{$funct}'] button "];}         
+    public function getCheckboxUser($user) : array {return ['xpath' => "//fds-selector-menu-checkbox/label[text()[contains(.,'{$user}')]]"];}      
+    public function getButtonSend($fileId) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='send'] button"];}
+    public function getButtonWFunction($fileId, $funct) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='{$funct}'] button "];}         
 
     protected $acceptanceTester;
 

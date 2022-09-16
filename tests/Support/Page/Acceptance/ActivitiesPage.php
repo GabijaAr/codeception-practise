@@ -37,7 +37,9 @@ class ActivitiesPage
         $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Manage activities' )]]"], 60);
         $I->waitForElementVisible($source, 60);
         $I->waitForElementVisible($target, 60);
+
         $I->dragAndDrop($source, $target);
+
         $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Save' )]]"], 10);
         $I->reloadPage();
     }

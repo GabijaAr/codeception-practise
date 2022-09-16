@@ -16,16 +16,18 @@ class LoginPage
      */
 
     public $mainUserAcc = [
-        'username' => 'Acc2@testermail.com',
+
+        'username' => 'Acc5@testermail.com',
         'password' => 'PASS*w01rd'
     ];
 
-    public $consultantUserAcc = [
-        'company' => 'Acme AB',
-        'user' => 'Acc4 Consultant',
-        'username' => 'Acc4consultant@tester.com',
-        'password' => 'PASS*w01rd4'
+    public $secondUserAcc = [
+        'company' => '',
+        'user' => 'Acc6 test company',
+        'username' => 'Acc6@testermail.com',
+        'password' => 'PASS*w01rd'
     ];
+
 
     public const URL = '/user/login';
 
