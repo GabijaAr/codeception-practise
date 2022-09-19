@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Tests\Support\Helper;
 use Codeception\Module;
 use Tests\Support\AcceptanceTester;
-use Codeception\Attribute\Incomplete;
-
 
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
@@ -14,13 +12,9 @@ use Codeception\Attribute\Incomplete;
 class DocumentsHelper extends \Codeception\Module
 {
 
-
-    public function getDocumentAreaId($companyId, $directoryName)
+    public function getDocumentAreaId($companyId, $directoryName) : int
     {
         $I = $this->getModule(name: 'REST');
-        
-        $I->haveHttpHeader('accept', 'application/json');        
-        $I->haveHttpHeader('content-type', 'application/json');    
 
         $directoriesList= $I->sendGET(
             "https://documents-develop-devdb.staging.cozone.com/v1/api/companies/{$companyId}/document-areas"
@@ -37,11 +31,9 @@ class DocumentsHelper extends \Codeception\Module
         return $directoryId;
     }
 
-    public function getFileId($directoryId, $fileName){
+    public function getFileId($directoryId, $fileName) : int
+    {
         $I = $this->getModule(name: 'REST');
-
-        $I->haveHttpHeader('accept', 'application/json');        
-        $I->haveHttpHeader('content-type', 'application/json');
 
         $I->sendGET(
             "https://documents-develop-devdb.staging.cozone.com/v1/api/directories/{$directoryId}"
@@ -61,19 +53,13 @@ class DocumentsHelper extends \Codeception\Module
     public function createNewDirectory( array $directoryParam, $passwordHelper ) : int 
     {
         $I = $this->getModule(name: 'REST');
-
-        $I->haveHttpHeader('accept', 'application/json');        
-        $I->haveHttpHeader('content-type', 'application/json');    
-        
-        
+               
         $I->sendPOST(
             'https://documents-develop-devdb.staging.cozone.com/v1/api/directories',[
                 'parentDirectoryId' => $directoryParam['parentDirectoryId'],
                 'name' => $directoryParam['directoryName'],
-                // array parameter
                 'accessRules' => 
                     [
-                    0 => 
                         [
                             'user' => 
                                 [
@@ -88,7 +74,7 @@ class DocumentsHelper extends \Codeception\Module
                                 ],
                             'permission' => $directoryParam['permission'],
                         ],
-                ], 
+                    ], 
             ]
         );
         $I->seeResponseCodeIsSuccessful();
@@ -98,13 +84,11 @@ class DocumentsHelper extends \Codeception\Module
     private function createTmpFile(string $fileName, string $fileContents): string
     {
         $location = sys_get_temp_dir() . "/{$fileName}";
-    
+
         if (file_exists($location)) {
             unlink($location);
         }
-    
         file_put_contents($location, $fileContents);
-    
         return $location;
     }
 
@@ -112,12 +96,8 @@ class DocumentsHelper extends \Codeception\Module
     {
         $I = $this->getModule(name: 'REST');
 
-        $nullV = null;
         $I->deleteHeader('Content-Type');
-
-
         $tmp = $this->createTmpFile($fileParam['name'], file_get_contents(codecept_data_dir($file)));
-
         $I->sendPOST('https://documents-develop-devdb.staging.cozone.com/v1/api/files', $fileParam, ['contents' => $tmp]);
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->seeResponseCodeIsSuccessful();

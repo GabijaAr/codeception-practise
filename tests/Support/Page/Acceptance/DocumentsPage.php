@@ -24,70 +24,52 @@ class DocumentsPage
     public const URL = 'https://documents-develop-devdb.staging.cozone.com/ui/recent'; 
     public const URL_FILE_DROP = 'https://documents-develop-devdb.staging.cozone.com/ui/file-drop'; 
 
-    public const NAV_SIDEBAR = ['css' => 'fds-layout-aside']; 
-    public const DOC_SIDEBAR = ['css' => '.scrollable doc-sidebar']; 
-    public const SIDEBAR_CURRENT_COMPANY = ['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] > a'];   
+    public const SIDEBAR_CURRENT_COMPANY = ['css' => 'fds-tree-item[data-gtm-id="sidebar-link-current-company"] > a'];
     public const DIRECTORY_MORE_BUTTON = ['css' => '#more-actions'];    
     public const FILE_ATTACH = ['css' => 'input[data-test-id="file-upload-selector"]']; 
-    public const BUTTON_UPLOAD_FILE = ['xpath' => "//button[text()[contains(., 'Upload file' )]]"];  
-    public const FILE_UPLOAD_BUTTON = ['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-upload-files"] > button']; 
+    public const CONSULT_FILE_UPLOAD_BUTTON = ['xpath' => "//button[text()[contains(., 'Upload file' )]]"];  
+    public const FILE_UPLOAD_BUTTON = ['css' => '[data-gtm-id="directory-upload-files"] > button'];
     public const TEXT_FIELD_INPUT = ['css' => 'fds-text-field > input'];       
-    public const COMPANY_CONTENT_ACTIONS_ROW = ['css' => 'div.ag-pinned-right-cols-container'];
-    public const DIRECTORY_DELETE_BUTTON = ['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-actions-delete-directory"] > button'];
-    public const FILE_TO_CONSULT_BUTTON = ['css' => 'fds-tree-item a[href="/ui/file-drop"]'];
-    public const MAIN_CARD = ['css' => 'doc-file-drop fds-card'];
-    public const FILE_UPLOAD_ALERT = ['css' => 'doc-uploader.shadow rounded fds-card-header'];
+    public const DIRECTORY_DELETE_BUTTON = ['css' => '[data-gtm-id="directory-actions-delete-directory"] > button'];
     public const BUTTON_FILE_SEND_REQUEST = ['css' => 'fds-icon.freshicon-send'];
     public const BUTTON_FILE_DOWNLOAD = ['xpath' => "//button/fds-icon[@class='freshicon freshicon-download']"];
     public const FILE_FRIEND_MORE_ACTIONS = ['css' => "fds-icon-button[data-gtm-id='file-actions-show-more-actions'] button"];
-    public const BUTTON_ADD_USERS = [ 'xpath' => "//doc-share-permissions//button[text()[contains(., 'Add users')]]"];
-           
+    public const BUTTON_ADD_USERS = [ 'xpath' => "//doc-share-permissions//button[text()[contains(., 'Add users')]]"];      
 
     public const NAV_SETUP_STRUCTURE = ['css' => 'a[href="/ui/default-structure-setup"]'];
     public const USER_TAB = ['css' =>'#users-tab'];
-    public const DIRECTORY_FINANCE_REPORTS = ['xpath' => "//a[text()[contains(., 'Finance Reports')]]"];
+    public const DIRECTORY_FINANCE_REPORTS = ['xpath' => "//fds-layout-aside//a//*[text()[contains(., 'Finance Reports')]]"];
     public const DIRECTORY_FROM_AZETS = ['xpath' => "//a[text()[contains(., 'From Azets')]]"];
     public const DIRECTORY_TO_AZETS = ['xpath' => "//a[text()[contains(., 'To Azets')]]"];
     public const DIRECTORY_HR_REPORTS = ['xpath' => "//a[text()[contains(.,'HR Reports')]]"];
-
-    public const STRUCTURE_FIELD_COUNTRY = ['css' => 'fds-selector-field[formcontrolname="country"]'];
-    public const STRUCTURE_FIELD_YEAR = ['css' => 'fds-selector-field[formcontrolname="year"]'];
-    public const STRUCTURE_FIELD_LANGUAGE = ['css' => 'fds-selector-field[formcontrolname="language"]'];
-    public const STRUCTURE_FIELD_DOC_AREAS = ['css' => 'fds-selector-field[formcontrolname="documentAreas"]'];    
-    public const STRUCTURE_FIELD_COMPANIES = ['css' => 'fds-selector-field[formcontrolname="companies"]']; 
-    public const STRUCTURE_CREATE = [ 'xpath' => '//button[text()[contains(., "Create structure")]]'];
-    public const STRUCTURE_COUTRY_SWEDEN = [ 'xpath' => '//button[text()[contains(., "Sweden")]]'];
-    public const STRUCTURE_YEAR_2024 = [ 'xpath' => '//button[text()[contains(., "2024")]]'];
-    public const STRUCTURE_LANGUAGE_EN = [ 'xpath' => '//button[text()[contains(., "EN")]]'];
+    public const STRUCTURE_FIELD_COUNTRY = ['css' => '[formcontrolname="country"]']; 
+    public const STRUCTURE_FIELD_YEAR = ['css' => '[formcontrolname="year"]']; 
+    public const STRUCTURE_FIELD_LANGUAGE = ['css' => '[formcontrolname="language"]']; 
+    public const STRUCTURE_FIELD_DOC_AREAS = ['css' => '[formcontrolname="documentAreas"]']; 
+    public const STRUCTURE_FIELD_COMPANIES = ['css' => '[formcontrolname="companies"]']; 
     public const STRUCTURE_DOC_AREAS_HR = [ 'xpath' => '//input/following-sibling::label[text()[contains(., "HR Reports")]]'];
     public const STRUCTURE_DOC_AREAS_FINANCE = [ 'xpath' => '//input/following-sibling::label[text()[contains(., "Finance Reports")]]']; 
     public const STRUCTURE_COMPANIES_INPUT = ['css' => 'fds-selector-field[formcontrolname="companies"] input'];
 
-    public const MAIN_CARD_HEADER = ['css' => '.ag-header.ag-focus-managed'];
     public const FIRST_ROW_CHECK = ['css' => 'fds-icon-button[icon="more"] > button:first-of-type'];      
-    public const FIRST_ROW = ['css' => '.ag-pinned-right-cols-container > div[role="row"]:first-of-type']; 
-    public const MORE_DELETE = ['css' => 'fds-dropdown-menu-item[data-gtm-id="file-actions-delete"] > button'];  
+    public const MORE_DELETE = ['css' => '[data-gtm-id="file-actions-delete"] > button'];
     public const CONFIRM_DELETE = ['css' => 'button[data-gtm-id="confirm-confirmation-modal"]'];
-    
-    public const SORT_BY_ADDED = ['css' => 'div[col-id="createdAt"]'];
-    public const NEW_DOCUMENT_AREA_BUTTON = ['css' => 'fds-button[data-test-id="sidebar-create-document-area"]'];  
+    public const NEW_DOCUMENT_AREA_BUTTON = ['css' => '[data-test-id="sidebar-create-document-area"]'];
     public const DOCUMENT_AREA_NAME_INPUT = ['css' => 'fds-text-field > input[placeholder="Document area name"]'];
     public const BUTTON_SAVE_NEW_DOC = ['xpath' => "//button[text()[contains(.,'Save')]]"];
     public const BUTTON_SELECT_APPROVERS = ['xpath' => "//button[text()[contains(.,'Select approvers')]]"];
     public const BUTTON_REQUEST_APPROVAL = ['xpath' => "//button[text()[contains(.,'Request for approval')]]"];
     public const BUTTON_APPROVE = ['xpath' => "//button[text()[contains(.,'Approve')]]"];
     public const RECENT_FROM_CONSULTANT = ['xpath' => "//button[text()[contains(., 'From consultant' )]]"];
-    public const RECENT_TO_CONSULTANT = ['xpath' => "//button[text()[contains(., 'To consultant' )]]"]; 
-    public const BUTTON_DELETE_DIRECTORY = ['css' => 'fds-dropdown-menu-item[data-gtm-id="directory-actions-delete-directory"] > button'];
+    public const RECENT_TO_CONSULTANT = ['xpath' => "//button[text()[contains(., 'To consultant' )]]"];
+    public const BUTTON_DELETE_DIRECTORY = ['css' => '[data-gtm-id="directory-actions-delete-directory"] > button'];
     public const FORM_COMPANY = ['css' => '[formcontrolname="company"]'];
-    public const BUTTON_ITEM = ['xpath' => "//fds-selector-menu-item/button"];
+    public const BUTTON_ITEM = ['css' => "fds-selector-menu-item button"];
     public const SEARCH_FIELD = ['css' => '[placeholder="Type to search"]'];    
     public const INPUT = [ 'css' => 'input'];    
     public const CHECKBOX_FIRST_OF_TYPE = ['css' => 'fds-selector-menu-checkbox:first-of-type']; 
-      
     public const REQUEST_SELECT_APPROVERS = ['css' => 'fds-selector-menu-checkbox > label'];
-    public const BREADCRUMBS_PATH = ['css' => "a[data-gtm-id='file-breadcrumbs-cell-directory']:first-of-type"];   
-    public const TOOLTIP_INNER_DETAILED = ['css' => 'body > div .tooltip-inner'];    
+    public const BREADCRUMBS_PATH = ['css' => "[data-gtm-id='file-breadcrumbs-cell-directory']:first-of-type"];
     public const TOOLTIP_INNER = ['css' => '.tooltip-inner']; 
     public const ALERT_SUCCESS = ['css' => '.alert-success'];
 
@@ -97,18 +79,19 @@ class DocumentsPage
     public function getSpanContains($text) : array {return ['xpath' => "//a//span[text()[contains(., '{$text}')]]"];}  
 
     public function getDirectoryShareWMe($parentDirectoryId) : array {return ['css' => "a.tree-node.tree-node--level-1[href='/ui/directory/{$parentDirectoryId}']"];}
-    public function getLinkDocumentName($docName) : array {return ['xpath' => "//a[text()[contains(.,'{$docName}')]]"];}
     public function getDocumentNameTitle($docName) : array {return ['css' => "[title='{$docName}'] a"];}    
     public function getButtonActionsWId($fileId) : array {return [ 'css' => "div[row-id='{$fileId}'] fds-icon-button[data-gtm-id='file-actions-show-more-actions'] button "];}  
     public function getDocumentIdButtonMore($directoryId) : array {return ['css' => "div[row-id='{$directoryId}'] fds-icon-button[icon='more'] > button"];}    
     public function getCardDirectoryName($directoryName) : array {return ['xpath' => "//doc-current-directory-header/fds-card-title[text()[contains(.,'{$directoryName}')]]"];}       
     public function getCardDirectoryRow($directoryId) : array {return ['css' => "div.ag-row-even[row-id='{$directoryId}']"];}      
     public function getSelectCompanyButton($userCompany) : array {return ['xpath' => "//fds-selector-menu-item[1]/button[text()[contains(., '{$userCompany}')]]"];}      
-    public function getRelativePath($relativePath) : array {return ['xpath' => "//doc-directory-tree//a//span[text()[contains(.,'{$relativePath}')]]"];}      
+    public function getRelativePath($relativePath) : array {return ['xpath' => "//doc-directory-tree//a//span[text()[contains(.,'{$relativePath}')]]"];}    
     
     public function getCheckboxUser($user) : array {return ['xpath' => "//fds-selector-menu-checkbox/label[text()[contains(.,'{$user}')]]"];}      
     public function getButtonSend($fileId) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='send'] button"];}
     public function getButtonWFunction($fileId, $funct) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='{$funct}'] button "];}         
+
+    public function getDirectoryAside($companyName) : array {return ['xpath' => "//fds-layout-aside//a//*[text()[contains(.,'{$companyName}')]]"];}  
 
     protected $acceptanceTester;
 
@@ -122,15 +105,13 @@ class DocumentsPage
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL);
-        $I->waitForElementVisible(self::NAV_SIDEBAR, 120);
-        $I->waitAndClick($this->getSpanContains($companyName), 60);        
-        $I->waitAndClick($this->getDocumentNameTitle($sharedData['documentAreaName']), 60);        
-        $I->waitAndClick(self::DIRECTORY_MORE_BUTTON, 60);  
-        $I->waitAndClick(self::FILE_UPLOAD_BUTTON, 60);
+        $I->waitAndClick($this->getSpanContains($companyName));        
+        $I->waitAndClick($this->getDocumentNameTitle($sharedData['documentAreaName']));        
+        $I->waitAndClick(self::DIRECTORY_MORE_BUTTON);  
+        $I->waitAndClick(self::FILE_UPLOAD_BUTTON);
         $I->attachFile(self::FILE_ATTACH, "{$sharedData['file']}");
-        $I->waitForElementVisible(self::TEXT_FIELD_INPUT, 60);
-        $I->fillField(self::TEXT_FIELD_INPUT, "{$companyName}");
-        $I->waitAndClick($this->getButtonContains('Upload files'), 60);        
+        $I->waitAndFill(self::TEXT_FIELD_INPUT, "{$companyName}");
+        $I->waitAndClick($this->getButtonContains('Upload files'));        
         $I->reloadPage();
     }
 
@@ -139,9 +120,8 @@ class DocumentsPage
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL);
-        $I->waitForElementVisible(self::NAV_SIDEBAR, 120);
-        $I->waitAndClick(self::SIDEBAR_CURRENT_COMPANY, 60);
-        $I->waitAndClick($this->getLinkDocumentName($documentAreaName), 60); 
+        $I->waitAndClick(self::SIDEBAR_CURRENT_COMPANY);
+        $I->waitAndClick($this->getLinkContains($documentAreaName)); 
         $I->waitAndClick($this->getButtonActionsWId($fileId));
         $I->click(self::MORE_DELETE);
         $I->click(self::CONFIRM_DELETE);
@@ -153,10 +133,9 @@ class DocumentsPage
         $I = $this->acceptanceTester;
                 
         $I->amOnUrl(self::URL);
-        $I->waitForElementVisible(self::NAV_SIDEBAR, 120);
         $I->waitAndClick(self::NEW_DOCUMENT_AREA_BUTTON);
         $I->waitAndFill(self::DOCUMENT_AREA_NAME_INPUT, "{$documentAreaName}");
-        $I->waitAndClick(self::BUTTON_SAVE_NEW_DOC, 60);
+        $I->waitAndClick(self::BUTTON_SAVE_NEW_DOC);
         $I->waitForElementVisible($this->getCardDirectoryName('Doc Area'), 60);
     }
 
@@ -165,13 +144,10 @@ class DocumentsPage
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL_FILE_DROP);
-        $I->waitForElementVisible(self::MAIN_CARD_HEADER, 120);
-
-        $I->waitAndClick(self::SIDEBAR_CURRENT_COMPANY, 60);
-        $I->waitForElementVisible(self::COMPANY_CONTENT_ACTIONS_ROW, 60);
-        $I->click($this->getDocumentIdButtonMore($directoryId));   
-        $I->click(self::DIRECTORY_DELETE_BUTTON);
-        $I->click(self::CONFIRM_DELETE);
+        $I->waitAndClick(self::SIDEBAR_CURRENT_COMPANY);
+        $I->waitAndClick($this->getDocumentIdButtonMore($directoryId));   
+        $I->waitAndClick(self::DIRECTORY_DELETE_BUTTON);
+        $I->waitAndClick(self::CONFIRM_DELETE);
         $I->reloadPage();
         $I->dontSeeElement($this->getCardDirectoryRow($directoryId));
     }
@@ -187,25 +163,24 @@ class DocumentsPage
 
         $I->amOnUrl(self::URL); 
 
-        $I->waitAndClick($this->getSpanContains($companyName), 60);
-        $I->waitAndClick($this->getSpanContains($documentAreaName), 60);
-        $I->waitAndClick(self::USER_TAB, 60);
-        $I->waitAndClick($this->getButtonContains('Add users'), 60);               
+        $I->waitAndClick($this->getSpanContains($companyName));
+        $I->waitAndClick($this->getSpanContains($documentAreaName));
+        $I->waitAndClick(self::USER_TAB);
+        $I->waitAndClick($this->getButtonContains('Add users'));               
         
-        $I->waitAndClick(self::FORM_COMPANY, 60);  
+        $I->waitAndClick(self::FORM_COMPANY);  
         $I->waitForElementVisible(self::BUTTON_ITEM, 60);
         $I->fillField(self::SEARCH_FIELD, "{$user['company']}");
-        $I->waitAndClick($this->getSelectCompanyButton($user['company']), 60);  
-        $I->waitAndClick($this->getButtonContains('Select users'), 60);
+        $I->waitAndClick($this->getSelectCompanyButton($user['company']));  
+        $I->waitAndClick($this->getButtonContains('Select users'));
         $I->waitForElementVisible(self::CHECKBOX_FIRST_OF_TYPE, 60);
         $I->fillField(self::SEARCH_FIELD, "{$user['user']}");
         $I->waitForElementVisible($this->getLabelContains($user['user']), 60); 
         $I->selectOption(self::INPUT, $this->getLabelContains($user['user']));
         $I->scrollTo(self::BUTTON_ADD_USERS,0, 100);
-        $I->waitAndClick(self::BUTTON_ADD_USERS, 60);       
-        $I->waitAndClick($this->getButtonContains($permission), 60);        
+        $I->waitAndClick(self::BUTTON_ADD_USERS);       
+        $I->waitAndClick($this->getButtonContains($permission));        
         
-
         $I->click($this->getButtonContains('Save'));        
         $I->waitForElementNotVisible(self::ALERT_SUCCESS, 60);
     }
@@ -215,12 +190,10 @@ class DocumentsPage
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL_FILE_DROP);
-        $I->waitForElementVisible(self::MAIN_CARD_HEADER, 120);  
-        $I->waitAndClick(self::SIDEBAR_CURRENT_COMPANY, 60);
-        $I->waitForElementVisible(self::COMPANY_CONTENT_ACTIONS_ROW, 60);
-        $I->click($this->getDocumentIdButtonMore($directoryId)); 
-        $I->click(self::BUTTON_DELETE_DIRECTORY);
-        $I->click(self::CONFIRM_DELETE);
+        $I->waitAndClick(self::SIDEBAR_CURRENT_COMPANY);
+        $I->waitAndClick($this->getDocumentIdButtonMore($directoryId)); 
+        $I->waitAndClick(self::BUTTON_DELETE_DIRECTORY);
+        $I->waitAndClick(self::CONFIRM_DELETE);
         $I->reloadPage();
         $I->dontSeeElement($this->getCardDirectoryRow($directoryId));
     }

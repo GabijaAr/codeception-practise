@@ -7,7 +7,6 @@ use Tests\Support\AcceptanceTester;
 use Tests\Support\Page\Acceptance\LoginPage;
 use Tests\Support\Page\Acceptance\ActivitiesPage;
 use Codeception\Util\Shared\Asserts;
-use Tests\Support\Helper\DragAndDropHelper;
 
 
 class ActivitiesCest
@@ -20,14 +19,13 @@ class ActivitiesCest
     }
 
     // tests
-    public function tryToDragAndDropActivity(AcceptanceTester $I, ActivitiesPage $activitiesPage, LoginPage $loginPage, DragAndDropHelper $dragAndDropHelper) : void
+    public function tryToDragAndDropActivity(AcceptanceTester $I, ActivitiesPage $activitiesPage, LoginPage $loginPage) : void
     {
 
 
         $source = $activitiesPage->getSourceActivity('Approve preliminary reports');
         $target = $activitiesPage->getTargetCalendarSlot('2022-01-31T22:00:00.000Z');
         // $activitiesPage->dragAndDrop($source, $target);
-        $dragAndDropHelper->dragAndDropJS('fds-layout-aside fds-tag[draggable="true"][1]', 'fds-layout-main div[data-key="2022-01-31T22:00:00.000Z"]');
       
         // $secondUser = $I->haveFriend('secondUser');
         // $secondUser->does(function (AcceptanceTester $I) use ($loginPage, $activitiesPage){
