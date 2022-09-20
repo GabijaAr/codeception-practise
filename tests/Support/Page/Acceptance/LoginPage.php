@@ -14,20 +14,6 @@ class LoginPage
     /**
      * @var \Tests\Support\AcceptanceTester;
      */
-
-    public $mainUserAcc = [
-        'company' => 'Test Company 2022',
-        'user' => 'Acc5 test company',    
-        'username' => 'Acc5@testermail.com',
-        'password' => 'PASS*w01rd'
-    ];
-
-    public $secondUserAcc = [
-        'company' => 'Test Company 2022',
-        'user' => 'Acc6 test company',
-        'username' => 'Acc6@testermail.com',
-        'password' => 'PASS*w01rd'
-    ];
     
 
     public const URL = '/user/login';

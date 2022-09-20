@@ -44,4 +44,22 @@ class ActivitiesPage
         $I->reloadPage();
     }
 
+    public function createActivity( ) : void
+    {
+        $I->amOnUrl(self::URL);
+        $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Manage activities' )]]"]);
+        $I->waitAndClick(['xpath' => "//button//*[text()[contains(., 'Select year' )]]"]); 
+               
+    }
+
+    public function selectDateByYear( ) : void
+    {
+
+    }
+
+    public function selectDateByMonth( ) : void
+    {
+
+    }
+
 }

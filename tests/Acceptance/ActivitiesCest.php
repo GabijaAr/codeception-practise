@@ -7,14 +7,30 @@ use Tests\Support\AcceptanceTester;
 use Tests\Support\Page\Acceptance\LoginPage;
 use Tests\Support\Page\Acceptance\ActivitiesPage;
 use Codeception\Util\Shared\Asserts;
-
+use Tests\Support\Helper\ActivitiesHelper;
 
 class ActivitiesCest
 {
-    public function _before(AcceptanceTester $I, LoginPage $loginPage)
+
+    private $secondUserAcc = [
+        'company' => 'Test Company 2022',
+        'user' => 'Acc5 test company',    
+        'username' => 'Acc5@testermail.com',
+        'password' => 'PASS*w01rd'
+    ];
+
+    private $mainUserAcc = [
+        'company' => 'Test Company 2022',
+        'user' => 'Acc6 test company',
+        'username' => 'Acc6@testermail.com',
+        'password' => 'PASS*w01rd'
+    ];
+
+    public function _before(AcceptanceTester $I, LoginPage $loginPage) : void
     {
-        $I->setPageAndCookie(LoginPage::URL);        
-        $I->redirectToPage($loginPage->mainUserAcc, ActivitiesPage::URL, $loginPage);
+        $I->setPageAndCookie(LoginPage::URL);  
+        $I->loginApi($this->mainUserAcc);      
+        $I->redirectToPage($this->mainUserAcc, ActivitiesPage::URL, $loginPage);
         $I->setCookie('automation_testing', 'selenium');
     }
 
@@ -48,6 +64,13 @@ class ActivitiesCest
 
         // $secondUser->leave();
 
+    }
+
+    public function tryToCalendarNavigation(AcceptanceTester $I, ActivitiesPage $activitiesPage, ActivitiesHelper $activitiesHelper) : void
+    {
+        $randomYear = rand(2010, 2022);
+        $activitiesHelper->generateYear($randomYear);
+        $activitiesHelper->navCalendarWArrow(2018);
     }
 
 }
