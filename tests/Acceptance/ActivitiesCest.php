@@ -11,7 +11,6 @@ use Tests\Support\Helper\ActivitiesHelper;
 
 class ActivitiesCest
 {
-
     private $secondUserAcc = [
         'company' => 'Test Company 2022',
         'user' => 'Acc5 test company',    
@@ -26,6 +25,12 @@ class ActivitiesCest
         'password' => 'PASS*w01rd'
     ];
 
+    private $activityParameters = [
+        'documentAreaName' => 'Doc Area',
+        'file' => 'd913d35c-915c-41db-a126-613d04694752.txt'        
+    ];
+
+
     public function _before(AcceptanceTester $I, LoginPage $loginPage) : void
     {
         $I->setPageAndCookie(LoginPage::URL);  
@@ -33,11 +38,18 @@ class ActivitiesCest
         $I->redirectToPage($this->mainUserAcc, ActivitiesPage::URL, $loginPage);
         $I->setCookie('automation_testing', 'selenium');
     }
+    public function _after(AcceptanceTester $I, ActivitiesPage $activitiesPage, \Codeception\Scenario $scenario) : void
+    {
+        if($scenario->current('name') === 'tryToCalendarNavigation')
+        {
+            $activitiesPage->deleteActivity();
+        }
+    }
+
 
     // tests
     public function tryToDragAndDropActivity(AcceptanceTester $I, ActivitiesPage $activitiesPage, LoginPage $loginPage) : void
     {
-
 
         $source = $activitiesPage->getSourceActivity('Approve preliminary reports');
         $target = $activitiesPage->getTargetCalendarSlot('2022-01-31T22:00:00.000Z');
@@ -69,8 +81,12 @@ class ActivitiesCest
     public function tryToCalendarNavigation(AcceptanceTester $I, ActivitiesPage $activitiesPage, ActivitiesHelper $activitiesHelper) : void
     {
         $randomYear = rand(2010, 2022);
+        $year = 2018;
         $activitiesHelper->generateYear($randomYear);
-        $activitiesHelper->navCalendarWArrow(2018);
+        $I->wait(15);
+        $activitiesHelper->navCalendarWArrow($year);
+        $activitiesPage->createActivity();
+
     }
 
 }

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace Tests\Support\Helper;
-use Tests\Support\AcceptanceTester;
+
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
@@ -31,41 +31,30 @@ class ActivitiesHelper extends \Codeception\Module
     public function navCalendarWArrow($year)
     {
         $I = $this->getModule(name: 'WebDriver');
-
+        
         $currentDate = $I->grabTextFrom(['css' => '.year-picker__title']);
         $dateSplitYear = str_split($currentDate, 4)[0];
         $currentYear = (int) $dateSplitYear;
 
-        $I->maximizeWindow();
         var_dump($currentYear);
 
         if($currentYear > $year)
         {
-            var_dump('less');
-            while($currentYear > $year) 
-            {
-                $I->waitForElementClickable(['xpath' => "//fds-layout-main//button/span[text()[contains(., 'Previous year' )]]"], 60);
-                $I->click(['xpath' => "//fds-layout-main//button/span[text()[contains(., 'Previous year' )]]"]);
+            while($currentYear > $year){
+                $I->waitForElementClickable(['xpath' => "//fds-year-picker/fds-icon-button[1]/button"], 60);
+                $I->click(['xpath' => "//fds-year-picker/fds-icon-button[1]/button"]);
+                $currentYear -= 1;
             }
-        }
-        elseif($currentYear < $year)
+        }elseif($currentYear < $year)
         {
-            var_dump('more');
-            while($currentYear < $year) 
-            {
-                $I->waitForElementClickable(['xpath' => "//fds-layout-main//button/span[text()[contains(., 'Next year' )]]"], 60);                
-                $I->click(['xpath' => "//fds-layout-main//button/span[text()[contains(., 'Next year' )]]"]);
+            while($currentYear < $year){
+                $I->waitForElementClickable(['xpath' => "//fds-year-picker/fds-icon-button[2]/button"], 60);                
+                $I->click(['xpath' => "//fds-year-picker/fds-icon-button[2]/button"]);
+                $currentYear += 1; 
             }
         }
-        $I->see('2018', '.year-picker__title');
-        $I->waitForElementClickable(['xpath' => "//fds-layout-main//button[text()[contains(., 'Manage activities' )]]"], 60);        
-        $I->click(['xpath' => "//fds-layout-main//button[text()[contains(., 'Manage activities' )]]"]);  
-    }
-
-
-    public function navCalendarDatePicker()
-    {
-        $I = $this->getModule(name: 'WebDriver');
+        $I->see("{$year}", '.year-picker__title');
+        $I->wait(5);
     }
 
 }

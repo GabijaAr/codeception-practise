@@ -29,37 +29,28 @@ class ActivitiesPage
         // you can inject other page objects here as well
     }
 
-    public function dragAndDrop(array $source, array $target ) : void
+    public function createActivity( ) : void
+    {   $I = $this->acceptanceTester;
+        // url
+        $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Manage activities' )]]"]);
+        $I->waitAndClick(['css' => '[title="Wed 20, June"]']);
+        $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Approve time reports' )]]"]);
+        $I->scrollTo(['xpath' => "//fds-selector-menu//button[text()[contains(., 'Operational meeting' )]]"]);
+        $I->click(['xpath' => "//fds-selector-menu//button[text()[contains(., 'Operational meeting' )]]"]);
+        $I->waitAndClick(['xpath' => "//act-activity-modal//button[text()[contains(., 'Save' )]]"]);
+        $I->waitAndClick(['xpath' => "//fds-layout-main//button[text()[contains(., 'Save' )]]"]);
+        $I->see('Operational meeting',['css' => 'div[title="Wed 20, June"] > .calendar__event > .calendar__event-name']);
+    }
+          
+    public function deleteActivity( ) : void
     {
         $I = $this->acceptanceTester;
 
-        $I->amOnUrl(self::URL);
-        $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Manage activities' )]]"], 60);
-        $I->waitForElementVisible($source, 60);
-        $I->waitForElementVisible($target, 60);
-
-        $I->dragAndDrop($source, $target);
-
-        $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Save' )]]"], 10);
         $I->reloadPage();
-    }
-
-    public function createActivity( ) : void
-    {
-        $I->amOnUrl(self::URL);
         $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Manage activities' )]]"]);
-        $I->waitAndClick(['xpath' => "//button//*[text()[contains(., 'Select year' )]]"]); 
-               
-    }
-
-    public function selectDateByYear( ) : void
-    {
-
-    }
-
-    public function selectDateByMonth( ) : void
-    {
-
+        $I->waitAndClick(['xpath' => "//div[@title='Wed 20, June']/div[@class='calendar__event text-truncate border-light-blue-800']//*[text()[contains(., 'Operational meeting' )]]"]);
+        $I->waitAndClick(['xpath' => "//act-activity-modal//button[text()[contains(., 'Delete activity' )]]"]);
+        $I->waitAndClick(['xpath' => "//fds-layout-main//button[text()[contains(., 'Save' )]]"]);
     }
 
 }
