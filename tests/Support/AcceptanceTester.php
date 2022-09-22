@@ -28,6 +28,12 @@ class AcceptanceTester extends \Codeception\Actor
     /**
      * Define custom actions here
      */
+
+    public function getButtonContains($text) : array {return ['xpath' => "//button[text()[contains(.,'{$text}')]]"];}
+    public function getLabelContains($text) : array {return ['xpath' => "//label[text()[contains(.,'{$text}')]]"];}
+    public function getLinkContains($text) : array {return ['xpath' => "//a[text()[contains(.,'{$text}')]]"];}  
+    public function getSpanContains($text) : array {return ['xpath' => "//a//span[text()[contains(., '{$text}')]]"];}  
+
     public $cookieDefaultParams = [
         'path' => '/',
         'secure' => true,
@@ -101,5 +107,13 @@ class AcceptanceTester extends \Codeception\Actor
         $I->waitForElementVisible($selector, 60);
         $I->click($selector);
     }
+
+    public function scrollAndClick($selector)
+    {
+        $I = $this;
+        $I->scrollTo($selector);
+        $I->click($selector);
+    }
+
 }
 

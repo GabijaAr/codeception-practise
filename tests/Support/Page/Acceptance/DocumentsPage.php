@@ -73,11 +73,6 @@ class DocumentsPage
     public const TOOLTIP_INNER = ['css' => '.tooltip-inner']; 
     public const ALERT_SUCCESS = ['css' => '.alert-success'];
 
-    public function getButtonContains($text) : array {return ['xpath' => "//button[text()[contains(.,'{$text}')]]"];}
-    public function getLabelContains($text) : array {return ['xpath' => "//label[text()[contains(.,'{$text}')]]"];}
-    public function getLinkContains($text) : array {return ['xpath' => "//a[text()[contains(.,'{$text}')]]"];}  
-    public function getSpanContains($text) : array {return ['xpath' => "//a//span[text()[contains(., '{$text}')]]"];}  
-
     public function getDirectoryShareWMe($parentDirectoryId) : array {return ['css' => "a.tree-node.tree-node--level-1[href='/ui/directory/{$parentDirectoryId}']"];}
     public function getDocumentNameTitle($docName) : array {return ['css' => "[title='{$docName}'] a"];}    
     public function getButtonActionsWId($fileId) : array {return [ 'css' => "div[row-id='{$fileId}'] fds-icon-button[data-gtm-id='file-actions-show-more-actions'] button "];}  
@@ -86,11 +81,9 @@ class DocumentsPage
     public function getCardDirectoryRow($directoryId) : array {return ['css' => "div.ag-row-even[row-id='{$directoryId}']"];}      
     public function getSelectCompanyButton($userCompany) : array {return ['xpath' => "//fds-selector-menu-item[1]/button[text()[contains(., '{$userCompany}')]]"];}      
     public function getRelativePath($relativePath) : array {return ['xpath' => "//doc-directory-tree//a//span[text()[contains(.,'{$relativePath}')]]"];}    
-    
     public function getCheckboxUser($user) : array {return ['xpath' => "//fds-selector-menu-checkbox/label[text()[contains(.,'{$user}')]]"];}      
     public function getButtonSend($fileId) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='send'] button"];}
     public function getButtonWFunction($fileId, $funct) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='{$funct}'] button "];}         
-
     public function getDirectoryAside($companyName) : array {return ['xpath' => "//fds-layout-aside//a//*[text()[contains(.,'{$companyName}')]]"];}  
 
     protected $acceptanceTester;
@@ -105,13 +98,13 @@ class DocumentsPage
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL);
-        $I->waitAndClick($this->getSpanContains($companyName));        
+        $I->waitAndClick($I->getSpanContains($companyName));        
         $I->waitAndClick($this->getDocumentNameTitle($sharedData['documentAreaName']));        
         $I->waitAndClick(self::DIRECTORY_MORE_BUTTON);  
         $I->waitAndClick(self::FILE_UPLOAD_BUTTON);
         $I->attachFile(self::FILE_ATTACH, "{$sharedData['file']}");
         $I->waitAndFill(self::TEXT_FIELD_INPUT, "{$companyName}");
-        $I->waitAndClick($this->getButtonContains('Upload files'));        
+        $I->waitAndClick($I->getButtonContains('Upload files'));        
         $I->reloadPage();
     }
 
@@ -121,7 +114,7 @@ class DocumentsPage
 
         $I->amOnUrl(self::URL);
         $I->waitAndClick(self::SIDEBAR_CURRENT_COMPANY);
-        $I->waitAndClick($this->getLinkContains($documentAreaName)); 
+        $I->waitAndClick($I->getLinkContains($documentAreaName)); 
         $I->waitAndClick($this->getButtonActionsWId($fileId));
         $I->click(self::MORE_DELETE);
         $I->click(self::CONFIRM_DELETE);
@@ -163,25 +156,25 @@ class DocumentsPage
 
         $I->amOnUrl(self::URL); 
 
-        $I->waitAndClick($this->getSpanContains($companyName));
-        $I->waitAndClick($this->getSpanContains($documentAreaName));
+        $I->waitAndClick($I->getSpanContains($companyName));
+        $I->waitAndClick($I->getSpanContains($documentAreaName));
         $I->waitAndClick(self::USER_TAB);
-        $I->waitAndClick($this->getButtonContains('Add users'));               
+        $I->waitAndClick($I->getButtonContains('Add users'));               
         
         $I->waitAndClick(self::FORM_COMPANY);  
         $I->waitForElementVisible(self::BUTTON_ITEM, 60);
         $I->fillField(self::SEARCH_FIELD, "{$user['company']}");
         $I->waitAndClick($this->getSelectCompanyButton($user['company']));  
-        $I->waitAndClick($this->getButtonContains('Select users'));
+        $I->waitAndClick($I->getButtonContains('Select users'));
         $I->waitForElementVisible(self::CHECKBOX_FIRST_OF_TYPE, 60);
         $I->fillField(self::SEARCH_FIELD, "{$user['user']}");
-        $I->waitForElementVisible($this->getLabelContains($user['user']), 60); 
-        $I->selectOption(self::INPUT, $this->getLabelContains($user['user']));
+        $I->waitForElementVisible($I->getLabelContains($user['user']), 60); 
+        $I->selectOption(self::INPUT, $I->getLabelContains($user['user']));
         $I->scrollTo(self::BUTTON_ADD_USERS,0, 100);
         $I->waitAndClick(self::BUTTON_ADD_USERS);       
-        $I->waitAndClick($this->getButtonContains($permission));        
+        $I->waitAndClick($I->getButtonContains($permission));        
         
-        $I->click($this->getButtonContains('Save'));        
+        $I->click($I->getButtonContains('Save'));        
         $I->waitForElementNotVisible(self::ALERT_SUCCESS, 60);
     }
 

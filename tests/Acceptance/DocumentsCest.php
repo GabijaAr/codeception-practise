@@ -12,7 +12,6 @@ use Tests\Support\Page\Acceptance\PortalPage;
 use Tests\Support\Helper\PasswordHelper;
 use Tests\Support\Helper\DocumentsHelper;
 
-
 class DocumentsCest
 {
     private $sharedData = [
@@ -54,13 +53,6 @@ class DocumentsCest
         'name' => 'File',
         'relativePath' => 'API',
         'parentDirectoryId' => 0,  
-    ];
-   
-    private $cookieDefaultParams = [
-        'path' => '/',
-        'secure' => true,
-        'httpOnly' => false,
-        'domain' => 'idp-develop-devdb.staging.cozone.com'
     ];
 
     public function _before(
@@ -133,18 +125,18 @@ class DocumentsCest
         $consultantUser->does(function (AcceptanceTester $I) use ($loginPage, $documentsPage, $documentsHelper){
             $I->setPageAndCookieForFriend(DocumentsPage::URL, $this->consultantUserAcc, $loginPage);
             $I->waitAndClick($documentsPage->getDirectoryShareWMe($this->directoryParam['parentDirectoryId']));
-            $I->waitAndClick($documentsPage->getLinkContains($this->sharedData['documentAreaName']));
+            $I->waitAndClick($I->getLinkContains($this->sharedData['documentAreaName']));
 
             $I->amGoingTo('check access permissions as viewer');  
             $I->waitAndClick(DocumentsPage::BUTTON_FILE_DOWNLOAD);
             $I->dontSeeElement(DocumentsPage::DIRECTORY_MORE_BUTTON);
             $I->dontSeeElement(DocumentsPage::BUTTON_FILE_SEND_REQUEST);
             $I->waitAndClick(DocumentsPage::FILE_FRIEND_MORE_ACTIONS);
-            $I->dontSeeElement($documentsPage->getButtonContains('Move file to...'));
-            $I->dontSeeElement($documentsPage->getButtonContains('Rename'));            
-            $I->dontSeeElement($documentsPage->getButtonContains('Delete'));            
-            $I->dontSeeElement($documentsPage->getButtonContains('View activity log'));            
-            $I->dontSeeElement($documentsPage->getButtonContains('Set duration time'));             
+            $I->dontSeeElement($I->getButtonContains('Move file to...'));
+            $I->dontSeeElement($I->getButtonContains('Rename'));            
+            $I->dontSeeElement($I->getButtonContains('Delete'));            
+            $I->dontSeeElement($I->getButtonContains('View activity log'));            
+            $I->dontSeeElement($I->getButtonContains('Set duration time'));             
         });
         $consultantUser->leave();
     }
@@ -156,11 +148,11 @@ class DocumentsCest
         $I->amOnUrl(DocumentsPage::URL);
         $I->waitAndClick(DocumentsPage::NAV_SETUP_STRUCTURE);
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_COUNTRY);               
-        $I->waitVisibleAndClick($documentsPage->getButtonContains('Sweden'));
+        $I->waitVisibleAndClick($I->getButtonContains('Sweden'));
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_YEAR);
-        $I->waitAndClick($documentsPage->getButtonContains('2024'));        
+        $I->waitAndClick($I->getButtonContains('2024'));        
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_LANGUAGE);  
-        $I->waitAndClick($documentsPage->getButtonContains('EN'));              
+        $I->waitAndClick($I->getButtonContains('EN'));              
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_DOC_AREAS);
         $I->waitForElementVisible(DocumentsPage::STRUCTURE_DOC_AREAS_HR, 60);
         $I->checkOption(DocumentsPage::STRUCTURE_DOC_AREAS_HR);  
@@ -168,9 +160,9 @@ class DocumentsCest
         $I->checkOption(DocumentsPage::STRUCTURE_DOC_AREAS_FINANCE);
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_COMPANIES); 
         $I->fillField(DocumentsPage::STRUCTURE_COMPANIES_INPUT, $this->mainUserAcc['company']);
-        $I->waitAndClick($documentsPage->getLabelContains($this->mainUserAcc['company']));           
+        $I->waitAndClick($I->getLabelContains($this->mainUserAcc['company']));           
 
-        $I->waitAndClick($documentsPage->getButtonContains('Create structure'));
+        $I->waitAndClick($I->getButtonContains('Create structure'));
         $I->waitForElementVisible(DocumentsPage::ALERT_SUCCESS, 60);
         
         $I->amGoingTo('check generated folders structure');
@@ -204,8 +196,8 @@ class DocumentsCest
 
         $I->amGoingTo('request file approval from consultant account');        
         $I->amOnUrl(DocumentsPage::URL);
-        $I->waitAndClick($documentsPage->getSpanContains($this->mainUserAcc['company']));         
-        $I->waitAndClick($documentsPage->getSpanContains($this->directoryParam['directoryName']));       
+        $I->waitAndClick($I->getSpanContains($this->mainUserAcc['company']));         
+        $I->waitAndClick($I->getSpanContains($this->directoryParam['directoryName']));       
         $I->waitAndClick($documentsPage->getRelativePath($this->fileParam['relativePath']));
         $I->waitAndclick($documentsPage->getButtonSend($newFile));
         $I->waitAndClick(DocumentsPage::BUTTON_SELECT_APPROVERS);        
@@ -219,8 +211,8 @@ class DocumentsCest
 
             $I->amGoingTo('approve file request from company account'); 
             $I->waitAndClick($documentsPage->getDirectoryShareWMe($this->directoryParam['parentDirectoryId']));
-            $I->waitAndClick($documentsPage->getLinkContains($this->directoryParam['directoryName']));
-            $I->waitAndClick($documentsPage->getLinkContains($this->fileParam['relativePath']));
+            $I->waitAndClick($I->getLinkContains($this->directoryParam['directoryName']));
+            $I->waitAndClick($I->getLinkContains($this->fileParam['relativePath']));
             $I->waitAndclick($documentsPage->getButtonWFunction($newFile, 'approved-action'));
             $I->waitAndClick(DocumentsPage::BUTTON_APPROVE);
         });

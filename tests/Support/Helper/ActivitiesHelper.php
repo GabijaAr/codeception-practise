@@ -3,13 +3,14 @@
 declare(strict_types=1);
 
 namespace Tests\Support\Helper;
+use Tests\Support\Page\Acceptance\ActivitiesPage;
 
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
 class ActivitiesHelper extends \Codeception\Module
 {
-    public function getUserId()
+    public function getUserId() : int
     {
         $I = $this->getModule(name: 'REST');
 
@@ -18,21 +19,23 @@ class ActivitiesHelper extends \Codeception\Module
         );
         $I->seeResponseCodeIsSuccessful();
         $user = json_decode($userData, true);
-        return $userId = $user['company']['id']; 
+        return $user['company']['id']; 
     }
 
-    public function generateYear($randomYear)
+    public function generateYear(int $randomYear)
     {
         $I = $this->getModule(name: 'WebDriver');
+        
         $userId= $this->getUserId();
         return $I->amOnPage("/ui/#/1/{$userId}/{$randomYear}");
     }
 
-    public function navCalendarWArrow($year)
+    public function navCalendarWArrow(int $year) : void
     {
         $I = $this->getModule(name: 'WebDriver');
-        
-        $currentDate = $I->grabTextFrom(['css' => '.year-picker__title']);
+
+        $I->waitForElementVisible(ActivitiesPage::DATAPICKER_CURRENT_YEAR, 60);
+        $currentDate = $I->grabTextFrom(ActivitiesPage::DATAPICKER_CURRENT_YEAR);
         $dateSplitYear = str_split($currentDate, 4)[0];
         $currentYear = (int) $dateSplitYear;
 
@@ -41,20 +44,18 @@ class ActivitiesHelper extends \Codeception\Module
         if($currentYear > $year)
         {
             while($currentYear > $year){
-                $I->waitForElementClickable(['xpath' => "//fds-year-picker/fds-icon-button[1]/button"], 60);
-                $I->click(['xpath' => "//fds-year-picker/fds-icon-button[1]/button"]);
+                $I->waitForElementClickable(ActivitiesPage::DATAPICKER_YEAR_PREVIOUS, 60);
+                $I->click(ActivitiesPage::DATAPICKER_YEAR_PREVIOUS);
                 $currentYear -= 1;
             }
         }elseif($currentYear < $year)
         {
             while($currentYear < $year){
-                $I->waitForElementClickable(['xpath' => "//fds-year-picker/fds-icon-button[2]/button"], 60);                
-                $I->click(['xpath' => "//fds-year-picker/fds-icon-button[2]/button"]);
+                $I->waitForElementClickable(ActivitiesPage::DATAPICKER_YEAR_NEXT, 60);                
+                $I->click(ActivitiesPage::DATAPICKER_YEAR_NEXT);
                 $currentYear += 1; 
             }
         }
         $I->see("{$year}", '.year-picker__title');
-        $I->wait(5);
     }
-
 }

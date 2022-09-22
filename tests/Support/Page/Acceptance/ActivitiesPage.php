@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Tests\Support\Page\Acceptance;
+use Tests\Support\AcceptanceTester;
 
 class ActivitiesPage
 {
@@ -17,9 +18,26 @@ class ActivitiesPage
      */
 
     public const URL = 'https://activities-develop-devdb.staging.cozone.com';
+    public const ADD_ACTIVITY_FIELD_TYPE_BTN = ['xpath' => "//fds-selector-field[@formcontrolname='type']//button"];
+    public const ADD_ACTIVITY_FIELD_OWNER_BTN = ['css' => "fds-selector-field[formcontrolname='owner'] button"];
+    public const ADD_ACTIVITY_FIELD_ADD_BTN = ['xpath' => "//act-activity-modal//button[text()[contains(., 'Save' )]]"];    
+    public const ADD_BTN = ['xpath' => "//fds-layout-main//button[text()[contains(., 'Save' )]]"];      
+    public const EDIT_ACTIVITY_DELETE = ['xpath' => "//act-activity-modal//button[text()[contains(., 'Delete activity' )]]"];      
+    public const DATAPICKER_MONTH = ['css' => "div.month-picker__title > fds-icon-button > button"];      
+    public const DATAPICKER_SELECT_MONTH = ['css' => "button.date-picker__month[aria-label='Fri Jun 01 2018']"];      
+    public const CANCEL_BUTTON = ['css' => 'fds-icon-button[icon="cancel"] > button'];      
+    public const DATAPICKER_YEAR_PREVIOUS = ['xpath' => "//fds-year-picker/fds-icon-button[1]/button"];      
+    public const DATAPICKER_YEAR_NEXT = ['xpath' => "//fds-year-picker/fds-icon-button[2]/button"];
+    public const DATAPICKER_CURRENT_YEAR = ['css' => '.year-picker__title'];      
+    
+    public function getAddActivityTitle($title) : array {return ['css' => "[title='{$title}']"];} 
+    public function getSelectActivityType($activity) : array {return ['xpath' => "//fds-selector-menu//button[text()[contains(., '{$activity}' )]]"];} 
+    public function getSelectActivityCompany($company) : array {return ['xpath' => "//fds-selector-menu-item/button[text()[contains(., '{$company}' )]]"];} 
+    public function getcreatedActivity($selectedDate) : array {return ['css' => "div[title='{$selectedDate}'] > .calendar__event > .calendar__event-name"];} 
+    
+    public function getActivity($activityParam) : array {return ['xpath' => "//div[@title='{$activityParam['selectedDate']}']//*[text()[contains(., '{$activityParam['activity']}' )]]"];} 
+    public function getActivityModal($activity) : array {return ['xpath' => "//div[text()[contains(., '{$activity}' )]]"];} 
 
-    function getSourceActivity($activityTipe) : array {return ['xpath' => "//fds-layout-aside//fds-tag[@draggable='true']//*[text()[contains(., '{$activityTipe}' )]]"];}
-    function getTargetCalendarSlot($dataKey) : array {return ['xpath' => "//fds-layout-main//div[@data-key='{$dataKey}']"];}
 
     protected $acceptanceTester;
 
@@ -29,28 +47,41 @@ class ActivitiesPage
         // you can inject other page objects here as well
     }
 
-    public function createActivity( ) : void
+    public function createActivity(array $activityParam, string $company) : void
     {   $I = $this->acceptanceTester;
-        // url
-        $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Manage activities' )]]"]);
-        $I->waitAndClick(['css' => '[title="Wed 20, June"]']);
-        $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Approve time reports' )]]"]);
-        $I->scrollTo(['xpath' => "//fds-selector-menu//button[text()[contains(., 'Operational meeting' )]]"]);
-        $I->click(['xpath' => "//fds-selector-menu//button[text()[contains(., 'Operational meeting' )]]"]);
-        $I->waitAndClick(['xpath' => "//act-activity-modal//button[text()[contains(., 'Save' )]]"]);
-        $I->waitAndClick(['xpath' => "//fds-layout-main//button[text()[contains(., 'Save' )]]"]);
-        $I->see('Operational meeting',['css' => 'div[title="Wed 20, June"] > .calendar__event > .calendar__event-name']);
+
+        $I->waitAndClick($I->getButtonContains('Manage activities'));
+        $I->waitAndClick($this->getAddActivityTitle($activityParam['selectedDate']));
+        $I->waitAndClick(self::ADD_ACTIVITY_FIELD_TYPE_BTN);
+        $I->scrollAndClick($this->getSelectActivityType($activityParam['activity']));
+        $I->waitAndClick(self::ADD_ACTIVITY_FIELD_OWNER_BTN); 
+        $I->waitAndClick($this->getSelectActivityCompany($company));       
+        $I->waitAndClick(self::ADD_ACTIVITY_FIELD_ADD_BTN);
+        $I->waitAndClick(self::ADD_BTN);
+        $I->waitForElementVisible($I->getButtonContains('Manage activities'), 60);
+        $I->scrollTo($this->getAddActivityTitle($activityParam['selectedDate']));        
+        $I->see($activityParam['activity'], $this->getcreatedActivity($activityParam['selectedDate']));
     }
-          
-    public function deleteActivity( ) : void
+        
+    public function navCalendarWDatepicker(string $activity) : void
+    {
+        $I = $this->acceptanceTester; 
+
+        $I->waitAndClick($I->getButtonContains('Month'));
+        $I->waitAndClick(self::DATAPICKER_MONTH);
+        $I->waitAndClick(self::DATAPICKER_SELECT_MONTH);
+        $I->waitAndClick($this->getActivityModal($activity), 60);
+        $I->waitAndClick(self::CANCEL_BUTTON);
+    }
+
+    public function deleteActivity(array $activityParam) : void
     {
         $I = $this->acceptanceTester;
 
-        $I->reloadPage();
-        $I->waitAndClick(['xpath' => "//button[text()[contains(., 'Manage activities' )]]"]);
-        $I->waitAndClick(['xpath' => "//div[@title='Wed 20, June']/div[@class='calendar__event text-truncate border-light-blue-800']//*[text()[contains(., 'Operational meeting' )]]"]);
-        $I->waitAndClick(['xpath' => "//act-activity-modal//button[text()[contains(., 'Delete activity' )]]"]);
-        $I->waitAndClick(['xpath' => "//fds-layout-main//button[text()[contains(., 'Save' )]]"]);
+        $I->waitAndClick($I->getButtonContains('Year'));
+        $I->waitAndClick($I->getButtonContains('Manage activities'));
+        $I->waitAndClick($this->getActivity($activityParam));
+        $I->waitAndClick(self::EDIT_ACTIVITY_DELETE);
+        $I->waitAndClick(self::ADD_BTN);
     }
-
 }
