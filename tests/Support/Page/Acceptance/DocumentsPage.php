@@ -73,18 +73,63 @@ class DocumentsPage
     public const TOOLTIP_INNER = ['css' => '.tooltip-inner']; 
     public const ALERT_SUCCESS = ['css' => '.alert-success'];
 
-    public function getDirectoryShareWMe($parentDirectoryId) : array {return ['css' => "a.tree-node.tree-node--level-1[href='/ui/directory/{$parentDirectoryId}']"];}
-    public function getDocumentNameTitle($docName) : array {return ['css' => "[title='{$docName}'] a"];}    
-    public function getButtonActionsWId($fileId) : array {return [ 'css' => "div[row-id='{$fileId}'] fds-icon-button[data-gtm-id='file-actions-show-more-actions'] button "];}  
-    public function getDocumentIdButtonMore($directoryId) : array {return ['css' => "div[row-id='{$directoryId}'] fds-icon-button[icon='more'] > button"];}    
-    public function getCardDirectoryName($directoryName) : array {return ['xpath' => "//doc-current-directory-header/fds-card-title[text()[contains(.,'{$directoryName}')]]"];}       
-    public function getCardDirectoryRow($directoryId) : array {return ['css' => "div.ag-row-even[row-id='{$directoryId}']"];}      
-    public function getSelectCompanyButton($userCompany) : array {return ['xpath' => "//fds-selector-menu-item[1]/button[text()[contains(., '{$userCompany}')]]"];}      
-    public function getRelativePath($relativePath) : array {return ['xpath' => "//doc-directory-tree//a//span[text()[contains(.,'{$relativePath}')]]"];}    
-    public function getCheckboxUser($user) : array {return ['xpath' => "//fds-selector-menu-checkbox/label[text()[contains(.,'{$user}')]]"];}      
-    public function getButtonSend($fileId) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='send'] button"];}
-    public function getButtonWFunction($fileId, $funct) : array {return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='{$funct}'] button "];}         
-    public function getDirectoryAside($companyName) : array {return ['xpath' => "//fds-layout-aside//a//*[text()[contains(.,'{$companyName}')]]"];}  
+    public function getDirectoryShareWMe($parentDirectoryId) : array 
+    {
+        return ['css' => "a.tree-node.tree-node--level-1[href='/ui/directory/{$parentDirectoryId}']"];
+    }
+
+    public function getDocumentNameTitle($docName) : array {
+        return ['css' => "[title='{$docName}'] a"];
+    }   
+
+    public function getButtonActionsWId($fileId) : array 
+    {
+        return [ 'css' => "div[row-id='{$fileId}'] [data-gtm-id='file-actions-show-more-actions'] button "];
+    } 
+
+    public function getDocumentIdButtonMore($directoryId) : array 
+    {
+        return ['css' => "div[row-id='{$directoryId}'] fds-icon-button[icon='more'] > button"];
+    }
+
+    public function getCardDirectoryName($directoryName) : array 
+    {
+        return ['xpath' => "//doc-current-directory-header/fds-card-title[text()[contains(.,'{$directoryName}')]]"];
+    }
+
+    public function getCardDirectoryRow($directoryId) : array 
+    {
+        return ['css' => "div.ag-row-even[row-id='{$directoryId}']"];
+    } 
+
+    public function getSelectCompanyButton($userCompany) : array 
+    {
+        return ['xpath' => "//fds-selector-menu-item[1]/button[text()[contains(., '{$userCompany}')]]"];
+    }  
+
+    public function getRelativePath($relativePath) : array {
+        return ['xpath' => "//doc-directory-tree//a//span[text()[contains(.,'{$relativePath}')]]"];
+    } 
+
+    public function getCheckboxUser($user) : array 
+    {
+        return ['xpath' => "//fds-selector-menu-checkbox/label[text()[contains(.,'{$user}')]]"];
+    } 
+
+    public function getButtonSend($fileId) : array 
+    {
+        return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='send'] button"];
+    }
+
+    public function getButtonWFunction($fileId, $funct) : array 
+    {
+        return ['css' => "div[row-id='{$fileId}'] fds-icon-button[icon='{$funct}'] button "];
+    }   
+          
+    public function getDirectoryAside($companyName) : array 
+    {
+        return ['xpath' => "//fds-layout-aside//a//*[text()[contains(.,'{$companyName}')]]"];
+    }  
 
     protected $acceptanceTester;
 
@@ -150,8 +195,8 @@ class DocumentsPage
         string $documentAreaName, 
         array $user, 
         string $companyName,
-        string $permission) : void
-    {
+        string $permission
+        ) : void {
         $I = $this->acceptanceTester;
 
         $I->amOnUrl(self::URL); 

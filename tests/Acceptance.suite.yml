@@ -20,5 +20,6 @@ modules:
             part: Json
         - Tests\Support\Helper\PasswordHelper
         - Tests\Support\Helper\DocumentsHelper
+        - Tests\Support\Helper\ActivitiesHelper
         - Asserts
 

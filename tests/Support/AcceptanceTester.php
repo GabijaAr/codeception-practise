@@ -64,7 +64,7 @@ class AcceptanceTester extends \Codeception\Actor
 
     }
 
-        public function redirectToPage(array $user, string $url, $loginPage) : void
+    public function redirectToPage(array $user, string $url, $loginPage) : void
     {
         $I = $this;
         $loginPage->login($user);
@@ -100,7 +100,6 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField($selector, $value);
     } 
 
-
     public function waitVisibleAndClick($selector)
     {
         $I = $this;
@@ -114,6 +113,5 @@ class AcceptanceTester extends \Codeception\Actor
         $I->scrollTo($selector);
         $I->click($selector);
     }
-
 }
 

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Tests\Support\Helper;
+
 use Codeception\Module;
 use Tests\Support\AcceptanceTester;
 
@@ -24,7 +25,7 @@ class DocumentsHelper extends \Codeception\Module
 
         $directoryId = 0;
         foreach ($directoriesList as $key => $value) {
-            if( $directoryName === $value['name']){
+            if ($directoryName === $value['name']) {
                 $directoryId += $value['id'];
             }         
         }
@@ -43,14 +44,14 @@ class DocumentsHelper extends \Codeception\Module
 
         $fileId = 0;
         foreach ($documentArea as $key => $value) {
-            if( $fileName === $value['name']){
+            if ($fileName === $value['name']) {
                 $fileId += $value['id'];
             }         
         }
         return $fileId;
     }
 
-    public function createNewDirectory( array $directoryParam, $passwordHelper ) : int 
+    public function createNewDirectory(array $directoryParam, $passwordHelper) : int 
     {
         $I = $this->getModule(name: 'REST');
                
@@ -98,10 +99,12 @@ class DocumentsHelper extends \Codeception\Module
 
         $I->deleteHeader('Content-Type');
         $tmp = $this->createTmpFile($fileParam['name'], file_get_contents(codecept_data_dir($file)));
-        $I->sendPOST('https://documents-develop-devdb.staging.cozone.com/v1/api/files', $fileParam, ['contents' => $tmp]);
+        $I->sendPOST(
+            'https://documents-develop-devdb.staging.cozone.com/v1/api/files', 
+            $fileParam, ['contents' => $tmp]
+        );
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->seeResponseCodeIsSuccessful();
         return $I->grabDataFromResponseByJsonPath('id')[0];
     }
-
 }

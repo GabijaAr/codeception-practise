@@ -14,54 +14,13 @@ use Tests\Support\Helper\DocumentsHelper;
 
 class DocumentsCest
 {
-    private $sharedData = [
-        'documentAreaName' => 'Doc Area',
-        'file' => 'd913d35c-915c-41db-a126-613d04694752.txt'        
-    ];
-
-    private $accessPermissions = [
-        'permissionViewer' => 'Viewer',
-        'permissionEditor' => 'Editor',
-        'permissionManager' => 'Manager',        
-        'permissionOwner' => 'Owner',
-    ];
-
-    private $mainUserAcc = [
-        'companyId' => 5074,
-        'company' => 'Test Company 09/2022',
-        'user' => 'Acc2 test company',                
-        'username' => 'Acc2@testermail.com',
-        'password' => 'PASS*w01rd'
-    ];
-
-    private $consultantUserAcc = [
-        'company' => 'Acme AB',
-        'user' => 'Acc4 Consultant',
-        'username' => 'Acc4consultant@tester.com',
-        'password' => 'PASS*w01rd4'
-    ];
-
-    private $directoryParam = [
-        'parentDirectoryId' => 2930954,
-        'directoryName' => 'Directory',
-        'userId' => '35703',
-        'permission' => 'viewer'
-    ];
-
-    private $fileParam = [
-        'contentType' => "text/plain",
-        'name' => 'File',
-        'relativePath' => 'API',
-        'parentDirectoryId' => 0,  
-    ];
-
     public function _before(
         AcceptanceTester $I,
         LoginPage $loginPage,
         DocumentsPage $documentsPage, 
         PasswordHelper $passwordHelper,
-        \Codeception\Scenario $scenario) : void
-    {
+        \Codeception\Scenario $scenario
+        ) : void {
         $I->setPageAndCookie(LoginPage::URL);        
         $I->loginApi($this->mainUserAcc);
         $I->redirectToPage($this->mainUserAcc, DocumentsPage::URL, $loginPage);
@@ -72,22 +31,22 @@ class DocumentsCest
         AcceptanceTester $I,
         DocumentsHelper $documentsHelper,
         DocumentsPage $documentsPage,
-        \Codeception\Scenario $scenario) : void
-    {
-        if($scenario->current('name') === 'tryToUploadFile' || $scenario->current('name') === 'tryToCreateDocumentArea')
-            {
-                $directoryId = $documentsHelper->getDocumentAreaId($this->mainUserAcc['companyId'], $this->sharedData['documentAreaName']);
+        \Codeception\Scenario $scenario
+        ) : void {
+            if ($scenario->current('name') === 'tryToUploadFile' 
+                || $scenario->current('name') === 'tryToCreateDocumentArea'
+            ) {
+                $directoryId = $documentsHelper->getDocumentAreaId(
+                    $this->mainUserAcc['companyId'], 
+                    $this->sharedData['documentAreaName']
+                );
                 $documentsPage->directoryDelete($this->sharedData['documentAreaName'], $directoryId);
-            }
-        if($scenario->current('name') === 'tryToSetUpStructure')
-            {
+            } elseif ($scenario->current('name') === 'tryToSetUpStructure') {
                 $directoryId = $documentsHelper->getDocumentAreaId($this->mainUserAcc['companyId'], 'Finance Reports');
                 $documentsPage->directoryDelete($this->sharedData['documentAreaName'], $directoryId);
                 $directoryId = $documentsHelper->getDocumentAreaId($this->mainUserAcc['companyId'], 'HR Reports');
                 $documentsPage->directoryDelete($this->sharedData['documentAreaName'], $directoryId);
-            }
-        if($scenario->current('name') === 'tryToFileUploadApi')
-            {
+            } elseif ($scenario->current('name') === 'tryToFileUploadApi') {
                 $documentsPage->deleteDirectoryApi($this->fileParam['parentDirectoryId']);
             }
     }
@@ -96,14 +55,12 @@ class DocumentsCest
     public function tryToUploadFile(
         AcceptanceTester $I, 
         DocumentsPage $documentsPage,
-        DocumentsHelper $documentsHelper,
         PasswordHelper $passwordHelper,
-        ) : void
-    {
+        ) : void {
         $documentsPage->createDocumentArea($this->sharedData['documentAreaName']);
         $documentsPage->fileUpload($this->sharedData, $this->mainUserAcc['company']);
-        $directoryId = $documentsHelper->getDocumentAreaId($this->mainUserAcc['companyId'], $this->sharedData['documentAreaName']);
-        $fileId = $documentsHelper->getFileId( $directoryId, $this->sharedData['file'], $passwordHelper);
+        $directoryId = $I->getDocumentAreaId($this->mainUserAcc['companyId'], $this->sharedData['documentAreaName']);
+        $fileId = $I->getFileId( $directoryId, $this->sharedData['file'], $passwordHelper);
         $documentsPage->fileDelete($this->sharedData['documentAreaName'], $fileId);
     }
 
@@ -111,8 +68,8 @@ class DocumentsCest
         AcceptanceTester $I, 
         LoginPage $loginPage, 
         DocumentsPage $documentsPage, 
-        DocumentsHelper $documentsHelper) : void
-    {
+        DocumentsHelper $documentsHelper
+        ) : void {
         $documentsPage->createDocumentArea($this->sharedData['documentAreaName']);    
         $documentsPage->fileUpload($this->sharedData, $this->mainUserAcc['company']);
         $documentsPage->grantAccessToDirectory(
@@ -147,12 +104,16 @@ class DocumentsCest
         $I->amGoingTo('set up structure with correct data'); 
         $I->amOnUrl(DocumentsPage::URL);
         $I->waitAndClick(DocumentsPage::NAV_SETUP_STRUCTURE);
+
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_COUNTRY);               
         $I->waitVisibleAndClick($I->getButtonContains('Sweden'));
+
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_YEAR);
-        $I->waitAndClick($I->getButtonContains('2024'));        
+        $I->waitAndClick($I->getButtonContains('2024')); 
+
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_LANGUAGE);  
-        $I->waitAndClick($I->getButtonContains('EN'));              
+        $I->waitAndClick($I->getButtonContains('EN')); 
+                     
         $I->waitAndClick(DocumentsPage::STRUCTURE_FIELD_DOC_AREAS);
         $I->waitForElementVisible(DocumentsPage::STRUCTURE_DOC_AREAS_HR, 60);
         $I->checkOption(DocumentsPage::STRUCTURE_DOC_AREAS_HR);  
@@ -179,14 +140,13 @@ class DocumentsCest
     }
 
     public function tryToFileUploadApi(AcceptanceTester $I,
-        DocumentsHelper $documentsHelper,
         PasswordHelper $passwordHelper, 
         DocumentsPage $documentsPage,
-        LoginPage $loginPage) : void
-    {       
+        LoginPage $loginPage
+        ) : void {       
         $I->amGoingTo('create directory with file through api'); 
-        $this->fileParam['parentDirectoryId'] = $documentsHelper->createNewDirectory($this->directoryParam, $passwordHelper);
-        $newFile = $documentsHelper->uploadNewFile($this->fileParam, $this->sharedData['file']);
+        $this->fileParam['parentDirectoryId'] = $I->createNewDirectory($this->directoryParam, $passwordHelper);
+        $newFile = $I->uploadNewFile($this->fileParam, $this->sharedData['file']);
         $I->reloadPage();
 
         $documentsPage->grantAccessToDirectory(
@@ -246,5 +206,44 @@ class DocumentsCest
 
         $consultantUserF->leave();
     }
+    private $sharedData = [
+        'documentAreaName' => 'Doc Area',
+        'file' => 'd913d35c-915c-41db-a126-613d04694752.txt'        
+    ];
 
+    private $accessPermissions = [
+        'permissionViewer' => 'Viewer',
+        'permissionEditor' => 'Editor',
+        'permissionManager' => 'Manager',        
+        'permissionOwner' => 'Owner',
+    ];
+
+    private $mainUserAcc = [
+        'companyId' => 5074,
+        'company' => 'Test Company 09/2022',
+        'user' => 'Acc2 test company',                
+        'username' => 'Acc2@testermail.com',
+        'password' => 'PASS*w01rd'
+    ];
+
+    private $consultantUserAcc = [
+        'company' => 'Acme AB',
+        'user' => 'Acc4 Consultant',
+        'username' => 'Acc4consultant@tester.com',
+        'password' => 'PASS*w01rd4'
+    ];
+
+    private $directoryParam = [
+        'parentDirectoryId' => 2930954,
+        'directoryName' => 'Directory',
+        'userId' => '35703',
+        'permission' => 'viewer'
+    ];
+
+    private $fileParam = [
+        'contentType' => "text/plain",
+        'name' => 'File',
+        'relativePath' => 'API',
+        'parentDirectoryId' => 0,  
+    ];
 }

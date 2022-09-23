@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Tests\Support\Page\Acceptance;
+
 use Tests\Support\AcceptanceTester;
 
 class ActivitiesPage
@@ -31,13 +32,31 @@ class ActivitiesPage
     public const DATAPICKER_CURRENT_YEAR = ['css' => '.year-picker__title'];      
     
     public function getAddActivityTitle($title) : array {return ['css' => "[title='{$title}']"];} 
-    public function getSelectActivityType($activity) : array {return ['xpath' => "//fds-selector-menu//button[text()[contains(., '{$activity}' )]]"];} 
-    public function getSelectActivityCompany($company) : array {return ['xpath' => "//fds-selector-menu-item/button[text()[contains(., '{$company}' )]]"];} 
-    public function getcreatedActivity($selectedDate) : array {return ['css' => "div[title='{$selectedDate}'] > .calendar__event > .calendar__event-name"];} 
     
-    public function getActivity($activityParam) : array {return ['xpath' => "//div[@title='{$activityParam['selectedDate']}']//*[text()[contains(., '{$activityParam['activity']}' )]]"];} 
-    public function getActivityModal($activity) : array {return ['xpath' => "//div[text()[contains(., '{$activity}' )]]"];} 
+    public function getSelectActivityType($activity) : array 
+    {
+        return ['xpath' => "//fds-selector-menu//button[text()[contains(., '{$activity}' )]]"];
+    } 
 
+    public function getSelectActivityCompany($company) : array 
+    {
+        return ['xpath' => "//fds-selector-menu-item/button[text()[contains(., '{$company}' )]]"];
+    } 
+
+    public function getcreatedActivity($selectedDate) : array 
+    {
+        return ['css' => "div[title='{$selectedDate}'] > .calendar__event > .calendar__event-name"];
+    } 
+
+    public function getActivity($activityParam) : array 
+    {
+        return ['xpath' => "//div[@title='{$activityParam['selectedDate']}']//*[text()[contains(., '{$activityParam['activity']}' )]]"];
+    } 
+
+    public function getActivityModal($activity) : array 
+    {
+        return ['xpath' => "//div[text()[contains(., '{$activity}' )]]"];
+    } 
 
     protected $acceptanceTester;
 

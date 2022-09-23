@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Tests\Support\Helper;
+
 use Tests\Support\Page\Acceptance\ActivitiesPage;
 
 // here you can define custom actions
@@ -41,16 +42,14 @@ class ActivitiesHelper extends \Codeception\Module
 
         var_dump($currentYear);
 
-        if($currentYear > $year)
-        {
-            while($currentYear > $year){
+        if ($currentYear > $year) {
+            while ($currentYear > $year) {
                 $I->waitForElementClickable(ActivitiesPage::DATAPICKER_YEAR_PREVIOUS, 60);
                 $I->click(ActivitiesPage::DATAPICKER_YEAR_PREVIOUS);
                 $currentYear -= 1;
             }
-        }elseif($currentYear < $year)
-        {
-            while($currentYear < $year){
+        } elseif ($currentYear < $year) {
+            while ($currentYear < $year) {
                 $I->waitForElementClickable(ActivitiesPage::DATAPICKER_YEAR_NEXT, 60);                
                 $I->click(ActivitiesPage::DATAPICKER_YEAR_NEXT);
                 $currentYear += 1; 

@@ -6,15 +6,13 @@ namespace Tests\Support\Page\Acceptance;
 
 use Tests\Support\AcceptanceTester;
 use Tests\Support\Helper\PasswordHelper;
-// use Tests\Support\Page\Acceptance\PortalPage;
-
+use Tests\Support\Page\Acceptance\PortalPage;
 
 class LoginPage
 {
     /**
      * @var \Tests\Support\AcceptanceTester;
      */
-    
 
     public const URL = '/user/login';
 
@@ -57,5 +55,4 @@ class LoginPage
         $I->waitForElementVisible(self::LOGIN_FORM, 60);
         $I->seeCurrentUrlEquals(self::URL);   
     }
-
 }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Tests\Support\Helper;
+
 use Codeception\Module;
 
 // here you can define custom actions
@@ -36,8 +37,10 @@ class PasswordHelper extends Module
         $I->haveHttpHeader('content-type', 'application/json');
     }
 
-    public function changePasswordApi(string $password, string $newPassword) : void
-    {
+    public function changePasswordApi(
+        string $password,
+        string $newPassword
+        ) : void {
         $I = $this->getModule(name: 'REST');
     
         $I->sendPATCH(
@@ -49,5 +52,4 @@ class PasswordHelper extends Module
         );
         $I->seeResponseCodeIsSuccessful();
     }
-
 }
